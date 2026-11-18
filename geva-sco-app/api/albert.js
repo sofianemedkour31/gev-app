@@ -62,7 +62,14 @@ module.exports = async (req, res) => {
       const detail = data.detail || data.error?.message || data.error || '';
       return res.status(502).json({ error: `Albert a répondu ${r.status}${detail ? ' : ' + String(typeof detail === 'string' ? detail : JSON.stringify(detail)).slice(0, 200) : ''}` });
     }
-    const text = data.choices?.[0]?.message?.content || '';
+    const choice = data.choices?.[0];
+    const text = choice?.message?.content;
+    if (typeof text !== 'string' || !text.trim()) {
+      const error = choice?.finish_reason === 'length'
+        ? 'Albert a atteint la limite de génération avant de produire une réponse. Réessayez.'
+        : 'Albert n’a renvoyé aucun texte. Réessayez.';
+      return res.status(502).json({ error });
+    }
     return res.status(200).json({ text, model });
   } catch (err) {
     return res.status(502).json({ error: 'Albert injoignable : ' + err.message });

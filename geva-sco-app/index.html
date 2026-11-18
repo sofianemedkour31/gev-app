@@ -900,7 +900,8 @@ function openSettings(){
   $('#set-test').onclick = async ()=>{
     const out=$('#set-test-res'); out.textContent='Test en cours…';
     const keep={relay:settings.relay, token:settings.token}; settings.relay=$('#set-relay').value.trim(); settings.token=$('#set-token').value;
-    try { const t = await callAlbert([{role:'user',content:'Réponds seulement : OK'}], 10); out.textContent='Connexion établie (réponse : '+t.slice(0,40)+')'; }
+    // Certains modèles consomment aussi des jetons avant de produire le texte final.
+    try { const t = await callAlbert([{role:'user',content:'Réponds seulement : OK'}], 1200); out.textContent='Connexion établie (réponse : '+t.slice(0,40)+')'; }
     catch(err){ out.textContent='Échec : '+err.message; }
     finally { Object.assign(settings, keep); }
   };
@@ -969,7 +970,7 @@ async function callAlbert(messages, maxTokens=1200){
   finally { clearTimeout(timer); }
   let data={}; try { data = await res.json(); } catch(e){}
   if (!res.ok) throw new Error(data.error || `erreur ${res.status}`);
-  if (!data.text) throw new Error('réponse vide');
+  if (typeof data.text !== 'string' || !data.text.trim()) throw new Error('Albert n’a renvoyé aucun texte. Réessayez.');
   return data.text;
 }
 
