@@ -15,12 +15,15 @@ Saisie du GEVA-Sco « réexamen » élève par élève, aide à la rédaction pa
 
 ## Déploiement Vercel
 
-1. Pousser ce dossier sur GitHub (ou `vercel` en ligne de commande), projet **sans framework** (« Other »), aucune commande de build.
+Le dépôt [sofianemedkour31/gev-app](https://github.com/sofianemedkour31/gev-app) est relié au projet Vercel **gev-app**. Les envois sur `main` déclenchent le déploiement de production sur [gev-app.vercel.app](https://gev-app.vercel.app).
+
+1. Configuration Vercel : dossier racine `geva-sco-app`, projet **sans framework** (« Other »), aucune commande de build.
 2. Variables d'environnement :
    - `ALBERT_API_KEY` — obligatoire (la même que pour l'appli PPI convient) ;
    - `ALBERT_MODEL` — facultatif, `albert-large` par défaut (repli automatique sur le premier modèle de chat disponible si ce nom disparaît du catalogue) ;
    - `APP_TOKEN` — facultatif : si défini, saisir le même jeton dans Paramètres de l'appli.
-3. Ouvrir l'URL, puis Paramètres › Tester la connexion.
+3. Après l'ajout de `ALBERT_API_KEY` dans l'environnement **Production**, relancer le déploiement depuis Vercel pour appliquer la variable. Ajouter aussi la clé à **Preview** pour utiliser Albert dans les aperçus.
+4. Ouvrir l'URL, puis Paramètres › Tester la connexion.
 
 En local : `npx serve .` (l'aide Albert nécessite le relais ; sans lui, saisie et export fonctionnent).
 
