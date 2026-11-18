@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GEVA-Sco · Réexamen — Dispositif ULIS</title>
+<style>
+:root{
+  --bleu:#000091; --bleu-h:#1212ff; --bleu-clair:#e3e3fd; --bleu-pale:#f5f5fe;
+  --fond:#ffffff; --gris:#f6f6f6; --gris-2:#eeeeee; --bord:#dddddd; --bord-2:#929292;
+  --texte:#161616; --texte-2:#3a3a3a; --texte-3:#666666;
+  --ok:#18753c; --ok-pale:#b8fec9; --warn:#b34000; --warn-pale:#ffe9e6; --amber:#a15c00; --amber-pale:#fff3d6;
+  --rouge:#e1000f;
+  --r:4px;
+  --font:"Marianne","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:var(--font);color:var(--texte);background:var(--fond);font-size:15px;line-height:1.5}
+button,input,select,textarea{font:inherit;color:inherit}
+[hidden]{display:none!important}
+
+/* ---------- Barre du haut ---------- */
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:16px;padding:10px 20px;background:#fff;border-bottom:1px solid var(--bord);box-shadow:0 1px 0 rgba(0,0,0,.02)}
+.brand{display:flex;align-items:center;gap:12px;min-width:220px}
+.brand-mark{width:4px;height:34px;background:linear-gradient(var(--bleu) 0 33%,#fff 33% 66%,var(--rouge) 66%);border:1px solid var(--bord)}
+.brand-title{font-weight:700;font-size:16px;line-height:1.2}
+.brand-sub{font-size:12px;color:var(--texte-3)}
+.eleve-pick{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.eleve-pick select{min-width:240px;max-width:360px;padding:7px 32px 7px 10px;border:none;border-bottom:2px solid var(--texte-2);background:var(--gris-2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23161616' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 10px center;appearance:none;border-radius:var(--r) var(--r) 0 0;font-weight:600}
+.saved{font-size:12px;color:var(--texte-3);white-space:nowrap}
+.top-actions{display:flex;gap:8px;align-items:center}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1px solid var(--bleu);background:#fff;color:var(--bleu);border-radius:var(--r);cursor:pointer;font-weight:500;font-size:14px;white-space:nowrap}
+.btn:hover{background:var(--bleu-pale)}
+.btn.primary{background:var(--bleu);color:#fff}
+.btn.primary:hover{background:var(--bleu-h)}
+.btn.ghost{border-color:transparent}
+.btn.small{padding:4px 10px;font-size:13px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.danger{border-color:var(--warn);color:var(--warn)}
+
+.menu{position:relative}
+.menu-list{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--bord);box-shadow:0 6px 18px rgba(0,0,18,.12);min-width:260px;padding:6px 0;border-radius:var(--r);z-index:30}
+.menu-list button{display:block;width:100%;text-align:left;padding:8px 16px;background:none;border:none;cursor:pointer;font-size:14px}
+.menu-list button:hover{background:var(--bleu-pale)}
+.menu-list hr{border:none;border-top:1px solid var(--bord);margin:6px 0}
+
+/* ---------- Mise en page ---------- */
+.layout{display:grid;grid-template-columns:270px 1fr;min-height:calc(100vh - 57px)}
+nav.side{border-right:1px solid var(--bord);background:var(--gris);padding:18px 0;position:sticky;top:57px;height:calc(100vh - 57px);overflow:auto}
+.side h2{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--texte-3);margin:0 20px 8px;font-weight:700}
+.side ol{list-style:none;margin:0 0 18px;padding:0}
+.side a{display:flex;align-items:center;gap:10px;padding:8px 20px 8px 17px;color:var(--texte-2);text-decoration:none;font-size:14px;border-left:3px solid transparent;cursor:pointer}
+.side a:hover{background:#fff}
+.side a.on{border-left-color:var(--bleu);color:var(--bleu);font-weight:600;background:#fff}
+.side .lbl{flex:1;min-width:0}
+.side .pg{font-size:11px;color:var(--texte-3);font-weight:400}
+.st{width:18px;height:18px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:11px;font-weight:700;border:1.5px solid var(--bord-2);color:var(--texte-3);background:#fff}
+.st.part{border-color:var(--bleu);color:var(--bleu)}
+.st.full{background:var(--ok);border-color:var(--ok);color:#fff}
+.st.warn{background:var(--warn);border-color:var(--warn);color:#fff}
+
+main{padding:28px 40px 80px;max-width:1080px;width:100%}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;border-bottom:1px solid var(--bord);padding-bottom:12px;margin-bottom:22px}
+.sec-head h1{font-size:24px;margin:0;line-height:1.25}
+.sec-head .pg{font-size:13px;color:var(--texte-3)}
+.intro{color:var(--texte-2);margin:-8px 0 22px;font-size:14px;max-width:760px}
+h3.sub{font-size:16px;margin:30px 0 12px;padding-left:10px;border-left:3px solid var(--bleu)}
+h3.sub:first-of-type{margin-top:6px}
+
+.card{border:1px solid var(--bord);border-radius:var(--r);padding:18px;margin-bottom:18px;background:#fff}
+.grid{display:grid;gap:14px 18px}
+.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
+.span2{grid-column:span 2}.span3{grid-column:span 3}
+
+.fld label,.area-head label,.lab{display:block;font-size:14px;font-weight:500;margin-bottom:4px;color:var(--texte)}
+.fld input,.fld select,textarea{width:100%;padding:8px 10px;border:none;border-bottom:2px solid var(--texte-2);background:var(--gris-2);border-radius:var(--r) var(--r) 0 0;outline:none}
+.fld input:focus,.fld select:focus,textarea:focus{outline:2px solid var(--bleu-h);outline-offset:2px}
+.fld .warnline{font-size:12px;color:var(--warn);margin-top:3px}
+textarea{resize:vertical;min-height:64px;line-height:1.45}
+
+.hint{font-size:13px;color:var(--texte-3);margin:-2px 0 8px}
+.area{margin-bottom:22px}
+.area-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.notes{background:var(--bleu-pale);border:1px dashed #b3b3f2;border-radius:var(--r);padding:10px;margin-bottom:8px}
+.notes label{font-size:12px;font-weight:600;color:var(--bleu);margin-bottom:4px;display:block}
+.notes textarea{background:#fff;border-bottom-color:#b3b3f2;min-height:70px;font-size:14px}
+
+.meter{display:flex;align-items:center;gap:10px;margin-top:6px;font-size:12px;color:var(--texte-3);min-height:16px}
+.bar{flex:none;width:120px;height:5px;background:var(--gris-2);border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ok)}
+.meter.amber .bar i{background:var(--amber)} .meter.amber{color:var(--amber)}
+.meter.over .bar i{background:var(--warn)} .meter.over{color:var(--warn);font-weight:600}
+
+.tools{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:8px}
+.tools .sep{width:1px;height:18px;background:var(--bord);margin:0 4px}
+.tools-label{font-size:12px;color:var(--texte-3);margin-right:2px}
+.tool{padding:3px 10px;border:1px solid var(--bord);background:#fff;border-radius:999px;font-size:13px;cursor:pointer;color:var(--texte-2)}
+.tool:hover{border-color:var(--bleu);color:var(--bleu)}
+.tool.on{background:var(--bleu-clair);border-color:var(--bleu);color:var(--bleu)}
+.tool.hl{border-color:var(--warn);color:var(--warn);font-weight:600}
+.tool:disabled{opacity:.5;cursor:wait}
+
+.checks{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px 18px;margin-bottom:12px}
+.chk{display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;padding:3px 0}
+.chk input{width:18px;height:18px;accent-color:var(--bleu)}
+.radios{display:flex;flex-direction:column;gap:8px}
+.radios.inline{flex-direction:row;flex-wrap:wrap;gap:6px 20px}
+.radio{display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:14px}
+.radio input{width:18px;height:18px;margin-top:2px;accent-color:var(--bleu)}
+
+/* ---------- Grille d'activités ---------- */
+.legend{display:grid;grid-template-columns:repeat(2,1fr);gap:4px 24px;font-size:13px;color:var(--texte-2);background:var(--gris);padding:12px 16px;border-radius:var(--r);margin-bottom:22px}
+.legend b{display:inline-block;width:22px;color:var(--bleu)}
+.group{border:1px solid var(--bord);border-radius:var(--r);margin-bottom:22px;overflow:hidden}
+.group-head{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--gris);padding:10px 16px;border-bottom:1px solid var(--bord)}
+.group-head h4{margin:0;font-size:15px}
+.gwarn{font-size:12px;color:var(--warn);font-weight:600}
+table.acts{width:100%;border-collapse:collapse}
+table.acts th{font-size:12px;font-weight:600;color:var(--texte-3);text-align:center;padding:8px 4px;border-bottom:1px solid var(--bord)}
+table.acts th:first-child{text-align:left;padding-left:16px}
+table.acts td{border-bottom:1px solid var(--gris-2);padding:4px}
+table.acts td:first-child{padding-left:16px;font-size:14px}
+table.acts tr:last-child td{border-bottom:none}
+.cell{width:38px;height:30px;border:1px solid var(--bord);background:#fff;border-radius:var(--r);cursor:pointer;font-weight:700;font-size:13px;color:var(--texte-3)}
+.cell:hover{border-color:var(--bleu)}
+.cell.on{color:#fff;border-color:transparent}
+.cell.on[data-val=A]{background:#18753c}.cell.on[data-val=B]{background:#5d6b00}.cell.on[data-val=C]{background:#b34000}.cell.on[data-val=D]{background:#ce0500}.cell.on[data-val=SO]{background:#666}
+.cell.so{width:auto;padding:0 8px;font-weight:500;font-size:12px}
+.group-body{padding:16px}
+.cadres{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.cadres .area{margin-bottom:0}
+
+/* ---------- Emploi du temps ---------- */
+table.edt{width:100%;border-collapse:separate;border-spacing:6px}
+table.edt th{font-size:13px;color:var(--texte-3);font-weight:600;text-align:left}
+table.edt td.day{font-weight:600;font-size:14px;width:90px;vertical-align:top;padding-top:8px}
+table.edt textarea{min-height:76px;font-size:14px}
+table.edt td.midi{width:120px}
+.compact .meter{min-height:0}
+
+/* ---------- Participants ---------- */
+.parts{display:grid;grid-template-columns:28px 1fr 1fr;gap:6px 12px;align-items:center}
+.parts .n{font-size:12px;color:var(--texte-3);text-align:right}
+.parts input{padding:6px 10px}
+
+/* ---------- Vérification ---------- */
+.checklist{list-style:none;padding:0;margin:0 0 24px}
+.checklist li{display:flex;gap:12px;align-items:flex-start;padding:10px 14px;border:1px solid var(--bord);border-radius:var(--r);margin-bottom:8px;font-size:14px}
+.checklist li.w{border-color:#f5c3b8;background:var(--warn-pale)}
+.checklist li.a{border-color:#f2d9a6;background:var(--amber-pale)}
+.checklist li.ok{border-color:#9fe0b4;background:#ecfdf1}
+.checklist a{color:var(--bleu);cursor:pointer;margin-left:auto;white-space:nowrap;font-size:13px}
+.export-box{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+
+/* ---------- Modale ---------- */
+.overlay{position:fixed;inset:0;background:rgba(22,22,22,.45);z-index:50;display:grid;place-items:center;padding:24px}
+.modal{background:#fff;border-radius:var(--r);width:min(780px,100%);max-height:calc(100vh - 48px);display:flex;flex-direction:column;box-shadow:0 12px 40px rgba(0,0,0,.25)}
+.modal.wide{width:min(1100px,100%);height:calc(100vh - 48px)}
+.modal-head{display:flex;justify-content:space-between;align-items:center;padding:16px 22px;border-bottom:1px solid var(--bord)}
+.modal-head h2{margin:0;font-size:18px}
+.modal-body{padding:18px 22px;overflow:auto;flex:1}
+.modal-foot{display:flex;justify-content:flex-end;gap:8px;padding:14px 22px;border-top:1px solid var(--bord);flex-wrap:wrap}
+.x{background:none;border:none;font-size:22px;cursor:pointer;color:var(--texte-3);line-height:1}
+.modal iframe{width:100%;height:100%;border:none;background:var(--gris)}
+.prop-note{font-size:13px;color:var(--texte-3);margin:0 0 10px}
+.prop-label{font-size:13px;font-weight:600;margin:12px 0 4px}
+.loading{display:flex;align-items:center;gap:12px;color:var(--texte-2);padding:30px 0}
+.spin{width:20px;height:20px;border:3px solid var(--bleu-clair);border-top-color:var(--bleu);border-radius:50%;animation:sp 0.8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.qlist{margin:0;padding-left:20px}
+.qlist li{margin-bottom:6px}
+
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--texte);color:#fff;padding:10px 18px;border-radius:var(--r);font-size:14px;z-index:60;box-shadow:0 6px 18px rgba(0,0,0,.2);max-width:90vw}
+.toast.err{background:var(--warn)}
+
+.empty{max-width:560px;margin:80px auto;text-align:center}
+.empty h1{font-size:24px}
+.empty p{color:var(--texte-2)}
+.tpl-missing{background:var(--amber-pale);border:1px solid #f2d9a6;padding:12px 16px;border-radius:var(--r);margin-bottom:20px;font-size:14px}
+
+@media (max-width:900px){
+  .layout{grid-template-columns:1fr}
+  nav.side{position:static;height:auto;border-right:none;border-bottom:1px solid var(--bord)}
+  main{padding:20px}
+  .g3,.g4,.cadres,.g2{grid-template-columns:1fr}
+  .span2,.span3{grid-column:auto}
+  .brand{min-width:0}
+}
+@media print{.top,nav.side{display:none}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <div class="brand-mark" aria-hidden="true"></div>
+    <div>
+      <div class="brand-title">GEVA-Sco · Réexamen</div>
+      <div class="brand-sub">Dispositif ULIS — aide à la rédaction</div>
+    </div>
+  </div>
+  <div class="eleve-pick">
+    <select id="pick" aria-label="Élève"></select>
+    <button class="btn small" id="btn-new">+ Nouvel élève</button>
+    <span class="saved" id="saved"></span>
+  </div>
+  <div class="top-actions">
+    <button class="btn" id="btn-preview">Aperçu PDF</button>
+    <button class="btn primary" id="btn-export">Exporter le PDF</button>
+    <div class="menu">
+      <button class="btn ghost" id="btn-menu" aria-haspopup="true" aria-label="Autres actions">⋯</button>
+      <div class="menu-list" id="menu" hidden>
+        <button data-menu="save-all">Sauvegarder toutes les données (.json)</button>
+        <button data-menu="save-one">Sauvegarder cet élève (.json)</button>
+        <button data-menu="import">Importer une sauvegarde…</button>
+        <hr>
+        <button data-menu="export-form">Exporter un PDF modifiable</button>
+        <button data-menu="duplicate">Dupliquer pour un prochain réexamen</button>
+        <button data-menu="defaults">Appliquer les valeurs du dispositif</button>
+        <hr>
+        <button data-menu="settings">Paramètres…</button>
+        <button data-menu="delete" style="color:var(--warn)">Supprimer cet élève</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="layout" id="layout">
+  <nav class="side" id="side" aria-label="Sections du GEVA-Sco"></nav>
+  <main id="main"></main>
+</div>
+
+<input type="file" id="file-import" accept="application/json,.json" hidden>
+<input type="file" id="file-tpl" accept="application/pdf" hidden>
+<div id="modal-root"></div>
+
+<script src="vendor/pdf-lib.min.js"></script>
+<script src="geva-export.js"></script>
+<script>
+'use strict';
+/* =====================================================================
+   1. Modèle du formulaire (noms = champs du PDF officiel)
+   ===================================================================== */
+const COTES = ['A','B','C','D','SO'];
+const GROUPS = {
+  g1:{title:'Tâches et exigences générales, relation avec autrui', page:4,
+      c1:'Taches-et-exigences-generales-relation-avec-autrui_Cadre', c2:'Taches-et-exigences-generales-relation-avec-autrui_Cadre2',
+      rows:[['Orientation-dans-le-temps','S’orienter dans le temps'],['Orientation-dans-l-espace','S’orienter dans l’espace'],
+        ['Fixer-son-attention','Fixer son attention'],['Memoriser','Mémoriser'],['Gerer-sa-securite','Gérer sa sécurité'],
+        ['Respecter-les-regles-de-vie','Respecter les règles de vie'],['Relations-avec-autrui','Avoir des relations avec autrui conformes aux règles sociales'],
+        ['Maitriser-son-comportement','Maîtriser son comportement dans ses relations avec autrui']]},
+  g2:{title:'Mobilité, manipulation', page:4, c1:'Mobilite-manipulation_Cadre1', c2:'Mobilite-manipulation_Cadre2', bati:true,
+      c1label:'Cadre 1 — Nature des difficultés rencontrées',
+      rows:[['Faire-ses-transferts','Faire ses transferts (ex. : du fauteuil roulant à la chaise)'],['Se-deplacer','Se déplacer à l’intérieur, à l’extérieur (activités scolaires)'],
+        ['Utiliser-les-transports-communs','Utiliser les transports en commun'],['Activites-de-motricite','Avoir des activités de motricité fine']]},
+  g3:{title:'Entretien personnel', page:4, c1:'Entretien-personnel_Cadre1', c2:'Entretien-personnel_Cadre2',
+      rows:[['Assurer-l-elimination','Assurer l’élimination et utiliser les toilettes'],['S-habiller-se-deshabiller','S’habiller / se déshabiller'],
+        ['Prendre-ses-repas','Prendre ses repas (manger, boire)'],['Prendre-soin-de-sa-sante','Prendre soin de sa santé']]},
+  g4:{title:'Communication', page:4, c1:'Communication_Cadre1', c2:'Communication_Cadre2',
+      rows:[['Parler','Parler'],['Comprendre-la-parole','Comprendre la parole en face à face'],['Comprendre-une-phrase-simple','Comprendre une phrase simple'],
+        ['Produire-recevoir-des-messages-non-verbaux','Produire et recevoir des messages non verbaux']]},
+  g5:{title:'Tâches et exigences en relation avec la scolarité', page:5, c1:'Taches-et-exigences-relation-scolarite_Cadre1', c2:'Taches-et-exigences-relation-scolarite_Cadre2',
+      rows:[['Lire','Lire'],['Ecrire','Écrire'],['Calculer','Calculer'],['Organiser-son-travail','Organiser son travail'],['Controler-son-travail','Contrôler son travail'],
+        ['Accepter-des-consignes','Accepter des consignes'],['Suivre-des-consignes','Suivre des consignes'],['S-installer-dans-la-classe','S’installer dans la classe'],
+        ['Utiliser-des-supports-pedagogiques','Utiliser des supports pédagogiques'],['Utiliser-du-materiel-adapte-a-son-handicap','Utiliser du matériel adapté à son handicap'],
+        ['Prendre-des-notes','Prendre des notes (quel que soit le support)'],['Participer-a-des-sorties-scolaires','Participer à des sorties scolaires']]},
+};
+const DAYS = [['Lundi',true],['Mardi',true],['Mercredi',true],['Jeudi',true],['Vendredi',true],['Samedi',false]];
+
+const SECTIONS = [
+  {id:'ident', title:'Identification', page:'1', part:'Le dossier'},
+  {id:'scol', title:'Points saillants de la scolarisation', page:'1'},
+  {id:'cond', title:'Conditions actuelles de scolarisation', page:'2'},
+  {id:'eval', title:'Évaluation de la scolarité', page:'2'},
+  {id:'edt', title:'Emploi du temps actuel', page:'3'},
+  {id:'obs1', title:'Observation des activités', page:'4', part:'Observations'},
+  {id:'obs2', title:'Activités liées à la scolarité', page:'5'},
+  {id:'bilan', title:'Bilan de la période écoulée', page:'6-7', part:'Bilan et suite'},
+  {id:'persp', title:'Perspectives', page:'7'},
+  {id:'rem', title:'Remarques et participants', page:'8'},
+  {id:'verif', title:'Vérification et export', page:'', part:'Finaliser'},
+];
+
+/* Consignes affichées sous chaque zone, reprises par l'aide Albert. */
+const AREAS = {
+  'Plan-projets-formalises_Commentaires':{label:'Plan ou projets formalisés — commentaires', hint:'Durée de mise en œuvre, effets observés.', sec:'cond'},
+  'Accompagnement-soins_Commentaires':{label:'Accompagnement et soins — commentaires, précisions', hint:'Qui intervient, à quel rythme, sur le temps scolaire ou non, avec quels effets visibles en classe.', sec:'cond'},
+  'Conditions-materielles_Commentaires':{label:'Conditions matérielles — commentaires, précisions', hint:'Aménagements et matériel effectivement utilisés, dans quelles situations, avec quelle autonomie.', sec:'cond'},
+  'Niveau-d-enseignement-dans-les-apprentissages':{label:'Niveau d’enseignement dans les apprentissages', hint:'Niveau (CP, CE1…) dans lequel l’élève travaille. Si le niveau n’est pas homogène, préciser par domaine (lecture, écriture, nombres, calcul…).', sec:'eval'},
+  'Evolutions-observées-et-persepectives-projet-professionnel':{label:'Évolutions observées et perspectives', hint:'Progrès constatés depuis le dernier examen, et perspectives (notamment projet professionnel pour les plus grands).', sec:'obs2'},
+  'Amenagements-et-adaptations-pedagogiques':{label:'Aménagements et adaptations pédagogiques (dont matériel pédagogique adapté)', hint:'En quoi ces aménagements ont-ils facilité la scolarisation, permis d’acquérir de nouvelles compétences ou d’augmenter la durée de scolarisation ?', sec:'bilan'},
+  'Dispositifs-collectifs-de-scolarisation':{label:'Dispositifs collectifs de scolarisation (ULIS, unité d’enseignement, SEGPA…)', hint:'Apports du dispositif ULIS : temps de regroupement, objectifs travaillés, effets sur les apprentissages et sur l’inclusion en classe de référence.', sec:'bilan'},
+  'Missions-realisees-par-la-personne-chargee-de-l-aide-humaine':{label:'Missions réalisées par la personne chargée de l’aide humaine', hint:'Missions effectivement assurées par l’AESH (accès aux activités, communication, autonomie…), et part de l’autonomie gagnée (désétayage).', sec:'bilan'},
+  'Accompagnement-et-soins':{label:'Accompagnements et soins (ESMS, libéraux, autres…)', hint:'Effets observables à l’école des accompagnements et soins, articulation avec le temps scolaire.', sec:'bilan'},
+  'Objectifs-pedagogiques-et-axes-a-travailler-pour-suite-parcours':{label:'Objectifs pédagogiques et axes à travailler pour la suite du parcours', hint:'Objectifs prioritaires pour la période à venir, par domaine, et conditions qui les rendent atteignables.', sec:'persp'},
+  'Remarques-de-l-eleve-et-des-parents':{label:'Remarques de l’élève et/ou de ses parents', hint:'Parole de la famille, notamment sur le projet de vie. Rapporter ce qui a été exprimé, sans l’interpréter.', sec:'rem'},
+  'Remarques-des-professionnels':{label:'Remarques des professionnels', hint:'Points de vigilance ou éléments complémentaires partagés par l’équipe.', sec:'rem'},
+};
+for (const g of Object.values(GROUPS)) {
+  AREAS[g.c1] = {label:g.c1label || 'Cadre 1 — Obstacles à la réalisation de l’activité', hint:'Ce qui empêche ou freine la réalisation des activités cotées C ou D.', sec:g.page===4?'obs1':'obs2', group:g.title};
+  AREAS[g.c2] = {label:'Cadre 2 — Points d’appui et commentaires', hint:'Points d’appui, aides efficaces, domaines dans lesquels l’élève se réalise.', sec:g.page===4?'obs1':'obs2', group:g.title};
+}
+
+/* =====================================================================
+   2. État et sauvegarde locale
+   ===================================================================== */
+const KEY = 'gevasco-ulis-v1';
+const SKEY = 'gevasco-ulis-settings';
+let db = load(KEY, {eleves:[], currentId:null});
+let settings = Object.assign({relay:'/api/albert', token:'', defaults:{}, participants:''}, load(SKEY, {}));
+let section = sessionStorage.getItem('gevasco-sec') || 'ident';
+let tpl = null;            // { bytes, font, fields } — gabarit PDF chargé
+let tplLoading = true;
+let openNotes = new Set();  // zones dont les notes sont dépliées
+
+function load(k, d){ try { return JSON.parse(localStorage.getItem(k)) || d; } catch(e){ return d; } }
+let saveTimer=null;
+function save(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>{
+    try {
+      localStorage.setItem(KEY, JSON.stringify(db));
+      const t = new Date(); $('#saved').textContent = 'Enregistré sur cet appareil · ' + t.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    } catch(e){ toast('Sauvegarde locale impossible : ' + e.message, true); }
+  }, 300);
+}
+function saveSettings(){ localStorage.setItem(SKEY, JSON.stringify(settings)); }
+
+const cur = () => db.eleves.find(e => e.id === db.currentId) || null;
+const uid = () => Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4);
+
+function schoolYearNow(){ const d=new Date(); const y=d.getMonth()>=7?d.getFullYear():d.getFullYear()-1; return `${y}-${y+1}`; }
+function newEleve(){
+  const e = {id:uid(), v:{_annee:schoolYearNow()}, notes:{}, created:new Date().toISOString(), updated:new Date().toISOString()};
+  applyDefaults(e, false);
+  return e;
+}
+function applyDefaults(e, overwrite){
+  const d = settings.defaults || {};
+  for (const [k,val] of Object.entries(d)) if (val && (overwrite || !e.v[k])) e.v[k]=val;
+  const parts = parseParticipants(settings.participants);
+  parts.forEach((p,i)=>{ if (overwrite || !e.v['Participant'+(i+1)]) { e.v['Participant'+(i+1)]=p[0]; e.v['Fonction'+(i+1)]=p[1]; } });
+}
+function parseParticipants(txt){ return String(txt||'').split('\n').map(l=>l.split(';').map(s=>s.trim())).filter(p=>p[0]).slice(0,15).map(p=>[p[0],p[1]||'']); }
+function displayName(e){ const p=e.v._prenom||'', n=e.v._nom||''; return (p||n) ? `${p} ${n}`.trim() : 'Élève sans nom'; }
+
+/* =====================================================================
+   3. Utilitaires d'interface
+   ===================================================================== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const val = f => (cur()?.v[f] ?? '');
+function toast(msg, err){
+  document.querySelectorAll('.toast').forEach(x=>x.remove());
+  const t=document.createElement('div'); t.className='toast'+(err?' err':''); t.textContent=msg; document.body.appendChild(t);
+  setTimeout(()=>t.remove(), err?6000:3000);
+}
+function q(sel){ return document.querySelector(sel); }
+function fieldEl(f){ return document.querySelector(`[data-field="${CSS.escape(f)}"]`); }
+
+/* =====================================================================
+   4. Rendu des sections
+   ===================================================================== */
+function input(f, label, opts={}){
+  const type = opts.type || 'text';
+  return `<div class="fld ${opts.cls||''}"><label for="fld-${esc(f)}">${label}</label>
+    <input id="fld-${esc(f)}" type="${type}" data-field="${esc(f)}" value="${esc(val(f))}" ${opts.ph?`placeholder="${esc(opts.ph)}"`:''} ${opts.auto?`autocomplete="${opts.auto}"`:''}>
+    <div class="warnline" data-warn="${esc(f)}"></div></div>`;
+}
+function area(f, opts={}){
+  const a = AREAS[f] || {};
+  const label = opts.label || a.label || f;
+  const notes = cur()?.notes?.[f] || '';
+  const open = openNotes.has(f);
+  return `<div class="area ${opts.compact?'compact':''}" data-area="${esc(f)}">
+    ${opts.nolabel?'':`<div class="area-head"><label for="fld-${esc(f)}">${label}</label></div>`}
+    ${(!opts.compact && (opts.hint ?? a.hint)) ? `<p class="hint">${esc(opts.hint ?? a.hint)}</p>`:''}
+    ${opts.compact?'':`<div class="notes" ${open?'':'hidden'} data-notesbox="${esc(f)}"><label for="notes-${esc(f)}">Mes notes rapides — non exportées, servent de base à l’aide Albert</label>
+      <textarea id="notes-${esc(f)}" data-notes="${esc(f)}" rows="3" placeholder="Mots-clés, observations en vrac…">${esc(notes)}</textarea></div>`}
+    <textarea id="fld-${esc(f)}" data-field="${esc(f)}" rows="${opts.rows||4}" ${opts.compact?'aria-label="'+esc(label)+'"':''}>${esc(val(f))}</textarea>
+    <div class="meter" data-meter="${esc(f)}"></div>
+    ${opts.compact?'':tools(f, notes)}
+  </div>`;
+}
+function tools(f, notes){
+  return `<div class="tools">
+    <button class="tool ${openNotes.has(f)?'on':''}" data-act="notes" data-f="${esc(f)}">Notes rapides${notes?' •':''}</button>
+    <span class="sep"></span><span class="tools-label">Aide Albert :</span>
+    <button class="tool" data-act="rediger" data-f="${esc(f)}">Rédiger depuis mes notes</button>
+    <button class="tool" data-act="ameliorer" data-f="${esc(f)}">Améliorer</button>
+    <button class="tool" data-act="condenser" data-f="${esc(f)}">Condenser</button>
+    <button class="tool" data-act="questions" data-f="${esc(f)}">Questions guidées</button>
+  </div>`;
+}
+function checks(items){
+  return `<div class="checks">${items.map(([f,l])=>`<label class="chk"><input type="checkbox" data-check="${esc(f)}" ${val(f)?'checked':''}> ${l}</label>`).join('')}</div>`;
+}
+function radios(f, options, inline){
+  return `<div class="radios ${inline?'inline':''}" role="radiogroup">${options.map(([v,l])=>
+    `<label class="radio"><input type="radio" name="r-${esc(f)}" data-radio="${esc(f)}" value="${esc(v)}" ${val(f)===v?'checked':''}> <span>${l}</span></label>`).join('')}</div>`;
+}
+function head(s){
+  return `<div class="sec-head"><h1>${s.title}</h1>${s.page?`<span class="pg">Formulaire, page ${s.page}/8</span>`:''}</div>`;
+}
+
+function yearOptions(){
+  const y = Number(schoolYearNow().slice(0,4)); const list=[];
+  for (let i=y-2;i<=y+2;i++) list.push(`${i}-${i+1}`);
+  const c = val('_annee'); if (c && !list.includes(c)) list.unshift(c);
+  return list.map(o=>`<option ${o===c?'selected':''}>${o}</option>`).join('');
+}
+
+const RENDER = {
+  ident(){
+    const civ = (n) => radios(`Personne${n}`, [['Mme','Mme'],['M','M.']], true);
+    const rep = (n, t) => `<div class="card"><h4 style="margin:0 0 12px;font-size:15px">${t}</h4>
+      <div class="grid g4">
+        <div class="fld"><span class="lab">Civilité</span>${civ(n)}</div>
+        ${input(`Personne${n}_Nom-ligne1`,'Nom et prénom',{cls:'span3'})}
+        ${input(`Personne${n}_Nom-ligne2`,'Complément (2e ligne)',{cls:'span2'})}
+        ${input(`Personne${n}_Numero-et-rue`,'N° et rue',{cls:'span2'})}
+        ${input(`Personne${n}_Code-postal`,'Code postal')}
+        ${input(`Personne${n}_Ville`,'Ville',{cls:'span3'})}
+        ${input(`Personne${n}_Telephone`,'Téléphone',{cls:'span2'})}
+        ${input(`Personne${n}_Courriel`,'Courriel',{cls:'span2', type:'email'})}
+      </div></div>`;
+    return `${head(SECTIONS[0])}
+      <div class="card"><div class="grid g3">
+        ${input('Numero-dossier-MDPH','N° de dossier MDPH')}
+        <div class="fld"><label for="fld-_annee">Année scolaire</label><select id="fld-_annee" data-field="_annee">${yearOptions()}</select></div>
+        ${input('_dateEss','Date de réunion de l’ESS',{type:'date'})}
+      </div></div>
+      <h3 class="sub">Élève</h3>
+      <div class="card"><div class="grid g3">
+        ${input('_prenom','Prénom',{auto:'off'})}
+        ${input('_nom','Nom',{auto:'off'})}
+        ${input('_naissance','Date de naissance',{type:'date'})}
+        ${input('Numero-et-rue','N° et rue',{cls:'span3'})}
+        ${input('Code-postal','Code postal')}
+        ${input('Ville','Ville',{cls:'span2'})}
+        ${input('Tel','Téléphone')}
+        ${input('Courriel','Courriel',{cls:'span2',type:'email'})}
+      </div></div>
+      <h3 class="sub">Coordonnées des représentants légaux</h3>
+      ${rep(1,'Parent 1')}${rep(2,'Parent 2')}${rep(3,'Autre responsable légal')}`;
+  },
+  scol(){
+    let rows='';
+    for (let i=1;i<=6;i++) rows += `<div class="grid" style="grid-template-columns:160px 1fr;margin-bottom:8px">
+      ${input('Parcours-de-scolarisation_Annee'+i, i===1?'Années':'', {ph:'2023-2024'})}
+      ${input('Parcours-de-scolarisation_Scolarisation'+i, i===1?'Scolarisation':'', {ph:'Classe, école, temps de scolarisation, dispositif…'})}</div>`;
+    return `${head(SECTIONS[1])}
+      <h3 class="sub">Enseignant référent du secteur</h3>
+      <div class="card"><div class="grid g2">
+        ${input('Coordonnees-enseignant_Nom','Nom et coordonnées',{cls:'span2'})}
+        ${input('Coordonnees-enseignant_Telephone','Téléphone')}
+        ${input('Coordonnees-enseignant_Courriel','Courriel',{type:'email'})}
+      </div></div>
+      <h3 class="sub">Établissement scolaire fréquenté</h3>
+      <div class="card"><div class="grid g3">
+        ${input('Etablissement-scolaire','Établissement',{cls:'span2'})}
+        ${input('Classe-frequentee','Classe fréquentée',{ph:'CE1 (classe de référence) + ULIS'})}
+        ${input('Etablissement-scolaire_Numero-et-rue','N° et rue',{cls:'span3'})}
+        ${input('Points-saillants-scolarisation_Code-postal','Code postal')}
+        ${input('Etablissement-scolaire_Ville','Ville',{cls:'span2'})}
+      </div></div>
+      <h3 class="sub">Parcours de scolarisation</h3>
+      <div class="card">${rows}</div>`;
+  },
+  cond(){
+    return `${head(SECTIONS[2])}
+      <p class="intro">Accompagnement ou aide spécifique, conditions matérielles, décloisonnement… Cochez ce qui est en place, puis précisez.</p>
+      <h3 class="sub">Plan ou projets formalisés</h3>
+      ${checks([['PAI','PAI'],['Mesures-educatives','Mesures éducatives'],['Autres-plan-ou-projet-formalises','Autres']])}
+      ${area('Plan-projets-formalises_Commentaires',{rows:3})}
+      <h3 class="sub">Accompagnement et soins</h3>
+      ${checks([['RASED','RASED'],['SAPAD','SAPAD'],['CNED','CNED'],['Soins-hospitaliers','Soins hospitaliers'],['CAMPS','CAMSP'],['CMP','CMP'],['CMPP','CMPP'],['EMS','EMS'],['SESSAD','SESSAD'],['Soins-en-liberal','Soins en libéral'],['Autres-accompagnements-et-soins','Autres']])}
+      ${area('Accompagnement-soins_Commentaires')}
+      <h3 class="sub">Conditions matérielles</h3>
+      ${checks([['Amenagements-adaptations-pedagogiques','Aménagements et adaptations pédagogiques'],['Outils-communication','Outils de communication'],['Materiel-informatique-audiovisuel','Matériel informatique et audiovisuel'],['Materiel-deficience-auditive','Matériel déficience auditive'],['Materiel-deficience-visuelle','Matériel déficience visuelle'],['Mobilier-et-petits-materiels','Mobilier et petits matériels'],['Transport','Transport'],['Autres-coditions-materielles','Autres']])}
+      ${area('Conditions-materielles_Commentaires')}`;
+  },
+  eval(){
+    return `${head(SECTIONS[3])}
+      <p class="intro">Rubrique à renseigner obligatoirement.</p>
+      ${area('Niveau-d-enseignement-dans-les-apprentissages',{rows:5})}
+      <div class="card">${radios('Scolarite',[['#0','Scolarité ayant permis les acquisitions attendues pour la moyenne de la classe d’âge'],['#1','Scolarité n’ayant pas permis d’accéder aux acquisitions attendues pour la moyenne de la classe d’âge']])}</div>`;
+  },
+  edt(){
+    const rows = DAYS.map(([d,full])=>`<tr><td class="day">${d}</td>
+      <td>${area(d+'-matin',{compact:true,nolabel:true,label:d+' matin',rows:3})}</td>
+      <td class="midi">${full?area(d+'-midi',{compact:true,nolabel:true,label:d+' midi',rows:3}):''}</td>
+      <td>${full?area(d+'-apres-midi',{compact:true,nolabel:true,label:d+' après-midi',rows:3}):'<span class="hint">Le formulaire ne prévoit que le samedi matin.</span>'}</td></tr>`).join('');
+    return `${head(SECTIONS[4])}
+      <p class="intro">Temps de scolarisation (classe de référence, regroupements ULIS), activités périscolaires, accompagnement et soins, lieux. Les cases du formulaire sont petites : privilégiez des formulations courtes (ex. « 8h30-10h CE1 / 10h15-11h45 ULIS »).</p>
+      <table class="edt"><thead><tr><th></th><th>Matin</th><th>Midi</th><th>Après-midi</th></tr></thead><tbody>${rows}</tbody></table>`;
+  },
+  obs1(){ return `${head(SECTIONS[5])}${legend()}${['g1','g2','g3','g4'].map(group).join('')}`; },
+  obs2(){
+    return `${head(SECTIONS[6])}${legend()}${group('g5')}
+      <h3 class="sub">Évolutions observées et perspectives</h3>
+      ${area('Evolutions-observées-et-persepectives-projet-professionnel',{nolabel:true,rows:5})}`;
+  },
+  bilan(){
+    return `${head(SECTIONS[7])}
+      <p class="intro">En quoi les aménagements, adaptations, orientations et compensations ont-ils facilité la scolarisation de l’élève, permis d’acquérir de nouvelles compétences et connaissances, ou permis d’augmenter la durée de scolarisation ?</p>
+      ${area('Amenagements-et-adaptations-pedagogiques',{rows:6})}
+      ${area('Dispositifs-collectifs-de-scolarisation',{rows:6})}
+      ${area('Missions-realisees-par-la-personne-chargee-de-l-aide-humaine',{rows:6})}
+      ${area('Accompagnement-et-soins',{rows:6})}`;
+  },
+  persp(){
+    return `${head(SECTIONS[8])}
+      ${area('Objectifs-pedagogiques-et-axes-a-travailler-pour-suite-parcours',{rows:10})}`;
+  },
+  rem(){
+    let parts='';
+    for (let i=1;i<=15;i++) parts += `<span class="n">${i}</span>
+      <input data-field="Participant${i}" value="${esc(val('Participant'+i))}" aria-label="Participant ${i} — nom et prénom" placeholder="${i===1?'Nom et prénom':''}">
+      <input data-field="Fonction${i}" value="${esc(val('Fonction'+i))}" aria-label="Participant ${i} — fonction" placeholder="${i===1?'Fonction':''}">`;
+    return `${head(SECTIONS[9])}
+      ${area('Remarques-de-l-eleve-et-des-parents',{rows:5})}
+      ${area('Remarques-des-professionnels',{rows:5})}
+      <h3 class="sub">Participants à la réunion</h3>
+      <div class="card"><div class="parts"><span></span><span class="lab">Nom – Prénom</span><span class="lab">Fonction</span>${parts}</div>
+      <p class="hint" style="margin-top:12px">Les participants habituels se règlent dans Paramètres et sont repris pour chaque nouvel élève.</p></div>`;
+  },
+  verif(){
+    const issues = checkAll();
+    const li = issues.length ? issues.map(i=>`<li class="${i.level}"><span>${esc(i.msg)}</span>${i.sec?`<a data-go="${i.sec}">Aller à la section</a>`:''}</li>`).join('')
+      : `<li class="ok"><span>Aucun point bloquant détecté. Relisez l’aperçu avant transmission.</span></li>`;
+    return `${head(SECTIONS[10])}
+      <h3 class="sub">Points à vérifier</h3>
+      <ul class="checklist">${li}</ul>
+      <h3 class="sub">Export</h3>
+      <div class="card">
+        <p style="margin-top:0">Le PDF produit est le formulaire officiel GEVA-Sco « Réexamen » (version 2, décembre 2014) rempli avec vos données. Les textes trop longs sont réduits automatiquement (jusqu’à 6 pt) pour tenir dans les cadres.</p>
+        <div class="export-box">
+          <button class="btn" data-go-act="preview">Aperçu</button>
+          <button class="btn primary" data-go-act="export">Télécharger le PDF (pour impression)</button>
+          <button class="btn" data-go-act="export-form">PDF modifiable</button>
+        </div>
+      </div>`;
+  },
+};
+
+function legend(){
+  return `<p class="intro">Cotation au regard de l’autonomie d’un élève du même âge. Si vous cochez C ou D, les deux cadres de commentaires sont indispensables.</p>
+  <div class="legend"><span><b>A</b>activité réalisée sans difficulté et seul</span><span><b>B</b>difficultés ponctuelles et/ou aide ponctuelle</span>
+  <span><b>C</b>difficultés régulières et/ou aide régulière</span><span><b>D</b>activité non réalisée</span></div>`;
+}
+function group(id){
+  const g = GROUPS[id];
+  const rows = g.rows.map(([f,l])=>`<tr><td>${l}</td>${COTES.map(c=>`<td style="text-align:center"><button class="cell ${c==='SO'?'so':''} ${val(f)===c?'on':''}" data-grid="${esc(f)}" data-val="${c}" aria-pressed="${val(f)===c}" aria-label="${esc(l)} : ${c==='SO'?'sans objet':c}">${c==='SO'?'S.O.':c}</button></td>`).join('')}</tr>`).join('');
+  return `<section class="group" data-group="${id}">
+    <div class="group-head"><h4>${g.title}</h4><span class="gwarn" data-gwarn="${id}"></span>
+      <button class="tool" data-act="cadres" data-g="${id}">Aide Albert : rédiger les cadres 1 et 2</button></div>
+    <table class="acts"><thead><tr><th>Activité</th><th>A</th><th>B</th><th>C</th><th>D</th><th>Sans objet</th></tr></thead><tbody>${rows}</tbody></table>
+    <div class="group-body">
+      ${g.bati?`<div class="fld" style="margin-bottom:14px"><span class="lab">Accessibilité du bâti</span>${radios('Accessibilite-du-bati',[['Oui','oui'],['Non','non'],['Partielle','partielle']],true)}</div>`:''}
+      <div class="cadres">${area(g.c1,{rows:5})}${area(g.c2,{rows:5})}</div>
+    </div></section>`;
+}
+
+/* ---------- Navigation latérale ---------- */
+function sectionFields(id){
+  const list = [];
+  if (id==='ident') list.push('Numero-dossier-MDPH','_dateEss','_prenom','_nom','_naissance','Numero-et-rue','Ville','Code-postal','Personne1_Nom-ligne1');
+  if (id==='scol') list.push('Coordonnees-enseignant_Nom','Etablissement-scolaire','Classe-frequentee','Parcours-de-scolarisation_Annee1');
+  if (id==='eval') list.push('Niveau-d-enseignement-dans-les-apprentissages','Scolarite');
+  if (id==='edt') DAYS.slice(0,5).forEach(([d])=>list.push(d+'-matin'));
+  if (id==='obs1') ['g1','g2','g3','g4'].forEach(g=>GROUPS[g].rows.forEach(r=>list.push(r[0])));
+  if (id==='obs2') { GROUPS.g5.rows.forEach(r=>list.push(r[0])); list.push('Evolutions-observées-et-persepectives-projet-professionnel'); }
+  if (id==='rem') list.push('Participant1');
+  for (const [f,a] of Object.entries(AREAS)) if (a.sec===id && !a.group && !list.includes(f)) list.push(f);
+  return list;
+}
+function sectionStatus(id, all){
+  const e = cur(); if (!e || id==='verif') return {cls:'', txt:''};
+  const issues = all.filter(i=>i.sec===id && i.level==='w');
+  if (issues.length) return {cls:'warn', txt:'!'};
+  const f = sectionFields(id); if (!f.length) return {cls:'',txt:''};
+  const n = f.filter(x=>String(e.v[x]??'').trim()).length;
+  if (n===0) return {cls:'', txt:''};
+  if (n>=f.length) return {cls:'full', txt:'✓'};
+  return {cls:'part', txt:''};
+}
+function renderNav(){
+  let html='', inList=false;
+  const all = checkAll();
+  for (const s of SECTIONS){
+    if (s.part){ if (inList) html+='</ol>'; html+=`<h2>${s.part}</h2><ol>`; inList=true; }
+    const st = sectionStatus(s.id, all);
+    html += `<li><a data-sec="${s.id}" class="${s.id===section?'on':''}" ${s.id===section?'aria-current="page"':''}>
+      <span class="st ${st.cls}">${st.txt}</span><span class="lbl">${s.title}${s.page?` <span class="pg">p. ${s.page}</span>`:''}</span></a></li>`;
+  }
+  html+='</ol>';
+  $('#side').innerHTML = html;
+}
+
+/* ---------- Rendu principal ---------- */
+function renderPick(){
+  const p = $('#pick');
+  p.innerHTML = db.eleves.length ? db.eleves.map(e=>`<option value="${e.id}" ${e.id===db.currentId?'selected':''}>${esc(displayName(e))}${e.v._annee?' — '+esc(e.v._annee):''}</option>`).join('') : '<option>Aucun élève</option>';
+  p.disabled = !db.eleves.length;
+  ['#btn-preview','#btn-export'].forEach(s=>$(s).disabled=!db.eleves.length);
+}
+function render(){
+  renderPick();
+  const e = cur();
+  if (!e){
+    $('#side').innerHTML='';
+    $('#main').innerHTML = `<div class="empty"><h1>GEVA-Sco · Réexamen</h1>
+      <p>Saisissez le GEVA-Sco de chaque élève du dispositif, avec l’aide d’Albert pour passer de vos notes à un texte rédigé, puis exportez le formulaire officiel rempli.</p>
+      <p style="font-size:14px">Les données restent enregistrées sur cet appareil. Utilisez la sauvegarde .json pour changer d’appareil.</p>
+      <p><button class="btn primary" id="btn-new-empty">Ajouter un premier élève</button> <button class="btn" data-menu-direct="import">Importer une sauvegarde</button></p></div>`;
+    return;
+  }
+  renderNav();
+  const tplWarn = (tpl || tplLoading) ? '' : `<div class="tpl-missing">Le formulaire PDF officiel n’a pas pu être chargé automatiquement (application ouverte hors serveur ?). La saisie fonctionne ; pour l’export et la jauge des cadres, <a href="#" id="tpl-pick">choisissez le fichier « OUTIL_formulaire_reexamen_interactif.pdf »</a>.</div>`;
+  $('#main').innerHTML = tplWarn + RENDER[section]();
+  document.querySelectorAll('[data-meter]').forEach(m=>updateMeter(m.dataset.meter));
+  document.querySelectorAll('[data-warn]').forEach(m=>updateInputWarn(m.dataset.warn));
+  Object.keys(GROUPS).forEach(updateGroupWarn);
+  autoGrowAll();
+}
+function go(id){ section=id; sessionStorage.setItem('gevasco-sec',id); render(); window.scrollTo(0,0); }
+
+function autoGrow(t){ if (t.closest('.compact')) return; t.style.height='auto'; t.style.height=Math.min(t.scrollHeight+4, 520)+'px'; }
+function autoGrowAll(){ document.querySelectorAll('main textarea').forEach(autoGrow); }
+
+/* ---------- Jauges de remplissage des cadres ---------- */
+const capCache = {};
+function boxOf(f){ return tpl?.fields?.[f]?.boxes?.[0]; }
+function capacity(f){
+  if (capCache[f]) return capCache[f];
+  const box = boxOf(f); if (!box) return null;
+  const sample = 'L’élève s’engage dans l’activité lorsque la consigne est reformulée et appuyée par un exemple. ';
+  const r = GevaExport.fit(sample.repeat(60), box, tpl.font, true);
+  return capCache[f] = Math.max(40, Math.round((r.capacity||0)/10)*10);
+}
+function fitOf(f, text){
+  const info = tpl?.fields?.[f]; if (!info || info.kind!=='text') return null;
+  return GevaExport.fit(text ?? val(f), info.boxes[0], tpl.font, info.multiline);
+}
+function updateMeter(f){
+  const m = document.querySelector(`[data-meter="${CSS.escape(f)}"]`); if (!m) return;
+  const compact = !!m.closest('.compact');
+  const text = val(f);
+  const r = fitOf(f, text);
+  m.className='meter';
+  if (!r){ m.innerHTML=''; return; }
+  if (!String(text).trim()){
+    m.innerHTML = compact ? '' : `<span>Cadre vide · environ ${capacity(f)} caractères disponibles</span>`; return;
+  }
+  const pct = Math.min(100, Math.round(r.fill*100));
+  let msg, cls='';
+  if (!r.fits){ cls='over'; msg = `Dépasse le cadre, même en ${GevaExport.MIN} pt (environ ${capacity(f)} caractères possibles, ${text.length} saisis) — à condenser`; }
+  else if (r.size < GevaExport.PREFERRED - 0.01){ cls = r.size < 7.5 ? 'amber' : ''; msg = `Police réduite à ${String(r.size).replace('.',',')} pt pour tenir dans le cadre`; }
+  else msg = `${pct} % du cadre`;
+  if (compact){ m.className='meter '+cls; m.innerHTML = cls ? `<span>${cls==='over'?'Trop long':'Réduit à '+String(r.size).replace('.',',')+' pt'}</span>`:''; return; }
+  m.className = 'meter '+cls;
+  m.innerHTML = `<span class="bar"><i style="width:${r.fits?pct:100}%"></i></span><span>${msg}</span>`;
+  const btn = document.querySelector(`.tool[data-act="condenser"][data-f="${CSS.escape(f)}"]`);
+  if (btn) btn.classList.toggle('hl', !r.fits || r.size < 7.5);
+}
+function updateInputWarn(f){
+  const w = document.querySelector(`[data-warn="${CSS.escape(f)}"]`); if (!w) return;
+  const pdfName = f==='_prenom'||f==='_nom' ? 'Nom-et-prenom-de-l-eleve' : f;
+  const text = f==='_prenom'||f==='_nom' ? fullName(cur()) : val(f);
+  const r = fitOf(pdfName, text);
+  w.textContent = !r || !String(text).trim() ? '' : (!r.fits ? 'Trop long pour la ligne du formulaire : sera tronqué.' : (r.size<7 ? `Réduit à ${String(r.size).replace('.',',')} pt à l’export.` : ''));
+}
+function updateGroupWarn(id){
+  const el = document.querySelector(`[data-gwarn="${id}"]`); if (!el) return;
+  const g = GROUPS[id];
+  const cd = g.rows.some(([f])=>['C','D'].includes(val(f)));
+  const missing = cd && (!String(val(g.c1)).trim() || !String(val(g.c2)).trim());
+  el.textContent = missing ? 'C ou D coché : cadres 1 et 2 à compléter' : '';
+}
+
+/* ---------- Vérifications ---------- */
+function checkAll(){
+  const e = cur(); if (!e) return [];
+  const out = [];
+  const v = k => String(e.v[k]??'').trim();
+  if (!v('_nom') || !v('_prenom')) out.push({level:'w', sec:'ident', msg:'Nom et prénom de l’élève à renseigner.'});
+  if (!v('_dateEss')) out.push({level:'a', sec:'ident', msg:'Date de la réunion de l’équipe de suivi de la scolarisation non renseignée.'});
+  if (!v('Numero-dossier-MDPH')) out.push({level:'a', sec:'ident', msg:'N° de dossier MDPH non renseigné.'});
+  if (!v('Niveau-d-enseignement-dans-les-apprentissages') || !v('Scolarite')) out.push({level:'w', sec:'eval', msg:'Évaluation de la scolarité (rubrique obligatoire) : niveau d’enseignement et case de synthèse à compléter.'});
+  for (const [id,g] of Object.entries(GROUPS)){
+    const cd = g.rows.filter(([f])=>['C','D'].includes(e.v[f])).map(r=>r[1]);
+    if (cd.length && (!v(g.c1) || !v(g.c2))) out.push({level:'w', sec:g.page===4?'obs1':'obs2', msg:`${g.title} : C ou D coché (${cd.join(', ')}) sans les deux cadres de commentaires.`});
+  }
+  const nObs = [...Object.values(GROUPS)].flatMap(g=>g.rows).filter(([f])=>e.v[f]).length;
+  if (!nObs) out.push({level:'a', sec:'obs1', msg:'Aucune activité cotée dans la grille d’observation.'});
+  if (tpl){
+    for (const f of Object.keys(e.v)){
+      if (f.startsWith('_')) continue;
+      const r = fitOf(f); if (!r || !String(e.v[f]).trim()) continue;
+      const a = AREAS[f]; const sec = a?.sec || (/-(matin|midi|apres-midi)$/.test(f)?'edt':null);
+      const lab = a ? (a.group ? `${a.group} › ${a.label.replace(/ — .*/,'')}` : a.label) : f.replace(/-/g,' ');
+      if (!r.fits) out.push({level:'w', sec, msg:`« ${lab} » dépasse le cadre du formulaire : le texte sera coupé.`});
+      else if (r.size < 7) out.push({level:'a', sec, msg:`« ${lab} » sera imprimé en ${String(r.size).replace('.',',')} pt : lisible mais petit, envisager de condenser.`});
+    }
+  }
+  return out;
+}
+
+/* =====================================================================
+   5. Événements de saisie
+   ===================================================================== */
+function touch(){ const e=cur(); if (e){ e.updated=new Date().toISOString(); save(); } }
+let navTimer=null;
+function refreshNavSoon(){ clearTimeout(navTimer); navTimer=setTimeout(renderNav, 400); }
+const meterTimers={};
+function meterSoon(f){ clearTimeout(meterTimers[f]); meterTimers[f]=setTimeout(()=>updateMeter(f), 120); }
+
+$('#main').addEventListener('input', ev=>{
+  const t = ev.target, e = cur(); if (!e) return;
+  if (t.dataset.field){
+    const f=t.dataset.field; e.v[f]=t.value; touch();
+    if (t.tagName==='TEXTAREA'){ autoGrow(t); meterSoon(f); }
+    updateInputWarn(f);
+    if (f==='_prenom'||f==='_nom'){ updateInputWarn('_prenom'); updateInputWarn('_nom'); renderPick(); }
+    for (const [id,g] of Object.entries(GROUPS)) if (f===g.c1||f===g.c2) updateGroupWarn(id);
+    refreshNavSoon();
+  } else if (t.dataset.notes){
+    e.notes[t.dataset.notes]=t.value; touch();
+  }
+});
+$('#main').addEventListener('change', ev=>{
+  const t = ev.target, e = cur(); if (!e) return;
+  if (t.dataset.check){ e.v[t.dataset.check] = t.checked; touch(); }
+  else if (t.dataset.radio){ e.v[t.dataset.radio] = t.value; touch(); refreshNavSoon(); }
+  else if (t.dataset.field && t.tagName==='SELECT'){ e.v[t.dataset.field]=t.value; touch(); renderPick(); }
+});
+$('#main').addEventListener('click', ev=>{
+  const t = ev.target.closest('button, a'); if (!t) return;
+  const e = cur();
+  if (t.dataset.grid && e){
+    const f=t.dataset.grid; e.v[f] = e.v[f]===t.dataset.val ? '' : t.dataset.val; touch();
+    t.closest('tr').querySelectorAll('.cell').forEach(b=>{ const on=e.v[f]===b.dataset.val; b.classList.toggle('on',on); b.setAttribute('aria-pressed',on); });
+    Object.keys(GROUPS).forEach(updateGroupWarn); refreshNavSoon(); return;
+  }
+  if (t.dataset.act==='notes'){
+    const f=t.dataset.f; const box=document.querySelector(`[data-notesbox="${CSS.escape(f)}"]`);
+    if (openNotes.has(f)) openNotes.delete(f); else openNotes.add(f);
+    box.hidden = !openNotes.has(f); t.classList.toggle('on', openNotes.has(f));
+    if (!box.hidden) box.querySelector('textarea').focus();
+    return;
+  }
+  if (t.dataset.act){ aiAction(t.dataset.act, t.dataset.f || t.dataset.g, t); return; }
+  if (t.dataset.go){ ev.preventDefault(); go(t.dataset.go); return; }
+  if (t.dataset.goAct==='preview') return preview();
+  if (t.dataset.goAct==='export') return exportPdf(true);
+  if (t.dataset.goAct==='export-form') return exportPdf(false);
+  if (t.id==='btn-new-empty') return addEleve();
+  if (t.dataset.menuDirect) return menuAction(t.dataset.menuDirect);
+  if (t.id==='tpl-pick'){ ev.preventDefault(); $('#file-tpl').click(); }
+});
+$('#side').addEventListener('click', ev=>{ const a=ev.target.closest('[data-sec]'); if (a) go(a.dataset.sec); });
+$('#pick').addEventListener('change', ev=>{ db.currentId=ev.target.value; openNotes.clear(); save(); render(); });
+$('#btn-new').addEventListener('click', addEleve);
+$('#btn-preview').addEventListener('click', preview);
+$('#btn-export').addEventListener('click', ()=>exportPdf(true));
+$('#btn-menu').addEventListener('click', ev=>{ ev.stopPropagation(); $('#menu').hidden=!$('#menu').hidden; });
+document.addEventListener('click', ()=>{ $('#menu').hidden=true; });
+$('#menu').addEventListener('click', ev=>{ const b=ev.target.closest('[data-menu]'); if (b){ $('#menu').hidden=true; menuAction(b.dataset.menu); } });
+
+function addEleve(){
+  const e=newEleve(); db.eleves.push(e); db.currentId=e.id; save(); section='ident'; render();
+  setTimeout(()=>fieldEl('_prenom')?.focus(), 30);
+}
+
+/* =====================================================================
+   6. Export PDF
+   ===================================================================== */
+function fullName(e){ if (!e) return ''; const n=(e.v._nom||'').trim().toUpperCase(), p=(e.v._prenom||'').trim(); return [n,p].filter(Boolean).join(' '); }
+function splitDate(iso){ const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(iso||''); return m?{y:m[1],m:m[2],d:m[3]}:null; }
+function toPdfValues(e){
+  const out={};
+  for (const [k,v] of Object.entries(e.v)) if (!k.startsWith('_')) out[k]=v;
+  const name = fullName(e);
+  out['Nom-et-prenom-de-l-eleve']=name; out['Nom-eleve']=name;
+  const yr=/^(\d{4})-(\d{4})$/.exec(e.v._annee||''); if (yr){ out['Annee-scolaire-debut']=yr[1].slice(2); out['Annee-scolaire-fin']=yr[2].slice(2); }
+  const r=splitDate(e.v._dateEss); if (r){ out['Date-reunion_Jour']=r.d; out['Date-reunion_Mois']=r.m; out['Date-reunion_Annee']=r.y.slice(2); }
+  const b=splitDate(e.v._naissance); if (b){ out['Date-naissance_Jour']=b.d; out['Date-naissance_Mois']=b.m; out['Date-naissance_Annee']=b.y; }
+  return out;
+}
+function fileName(e, suffix){
+  const clean = s => String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^A-Za-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  return `GEVA-Sco_reexamen_${clean(e.v._nom)||'eleve'}_${clean(e.v._prenom)}${e.v._dateEss?'_'+e.v._dateEss:''}${suffix||''}.pdf`;
+}
+async function buildPdf(flatten){
+  const e=cur(); if (!e) return null;
+  if (!tpl){ toast('Chargez d’abord le formulaire PDF officiel (voir le bandeau en haut de la page).', true); return null; }
+  return GevaExport.build(tpl.bytes, toPdfValues(e), {flatten, title:`GEVA-Sco réexamen — ${fullName(e)}`});
+}
+async function exportPdf(flatten){
+  try {
+    const bytes = await buildPdf(flatten); if (!bytes) return;
+    download(new Blob([bytes],{type:'application/pdf'}), fileName(cur(), flatten?'':'_modifiable'));
+    const w = checkAll().filter(i=>i.level==='w').length;
+    toast(w ? `PDF exporté — ${w} point(s) à vérifier (section Vérification).` : 'PDF exporté.');
+  } catch(err){ console.error(err); toast('Export impossible : '+err.message, true); }
+}
+let previewUrl=null;
+async function preview(){
+  try {
+    const bytes = await buildPdf(true); if (!bytes) return;
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    previewUrl = URL.createObjectURL(new Blob([bytes],{type:'application/pdf'}));
+    modal(`<div class="modal wide"><div class="modal-head"><h2>Aperçu — ${esc(fullName(cur()))}</h2><button class="x" data-close aria-label="Fermer">×</button></div>
+      <div class="modal-body" style="padding:0"><iframe src="${previewUrl}" title="Aperçu du PDF"></iframe></div>
+      <div class="modal-foot"><button class="btn" data-close>Fermer</button><button class="btn primary" id="pv-dl">Télécharger</button></div></div>`);
+    $('#pv-dl').onclick=()=>exportPdf(true);
+  } catch(err){ console.error(err); toast('Aperçu impossible : '+err.message, true); }
+}
+function download(blob, name){
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+}
+
+/* =====================================================================
+   7. Menu : sauvegardes, duplication, paramètres
+   ===================================================================== */
+function menuAction(a){
+  const e=cur();
+  const stamp = new Date().toISOString().slice(0,10);
+  if (a==='save-all') return download(new Blob([JSON.stringify({app:'gevasco-ulis',version:1,exported:new Date().toISOString(),eleves:db.eleves},null,2)],{type:'application/json'}), `gevasco-sauvegarde-${stamp}.json`);
+  if (a==='import') return $('#file-import').click();
+  if (a==='settings') return openSettings();
+  if (!e) return toast('Sélectionnez d’abord un élève.', true);
+  if (a==='save-one') return download(new Blob([JSON.stringify({app:'gevasco-ulis',version:1,exported:new Date().toISOString(),eleves:[e]},null,2)],{type:'application/json'}), `gevasco-${(e.v._prenom||'eleve').toLowerCase()}-${stamp}.json`);
+  if (a==='export-form') return exportPdf(false);
+  if (a==='defaults'){ applyDefaults(e,true); touch(); render(); return toast('Valeurs du dispositif appliquées (établissement, enseignant référent, participants).'); }
+  if (a==='duplicate'){
+    const c = JSON.parse(JSON.stringify(e)); c.id=uid(); c.v._dateEss=''; c.created=c.updated=new Date().toISOString();
+    const y=/^(\d{4})-(\d{4})$/.exec(c.v._annee||''); if (y) c.v._annee=`${+y[1]+1}-${+y[2]+1}`;
+    db.eleves.push(c); db.currentId=c.id; save(); render();
+    return toast('Copie créée pour l’année suivante : relisez chaque rubrique avant l’ESS.');
+  }
+  if (a==='delete'){
+    if (!confirm(`Supprimer définitivement le GEVA-Sco de ${displayName(e)} sur cet appareil ?`)) return;
+    db.eleves = db.eleves.filter(x=>x.id!==e.id); db.currentId = db.eleves[0]?.id || null; save(); render();
+  }
+}
+$('#file-import').addEventListener('change', async ev=>{
+  const file=ev.target.files[0]; ev.target.value=''; if (!file) return;
+  try {
+    const data = JSON.parse(await file.text());
+    const list = Array.isArray(data.eleves) ? data.eleves : (data.eleve ? [data.eleve] : null);
+    if (!list) throw new Error('fichier non reconnu');
+    let added=0, replaced=0;
+    for (const x of list){
+      if (!x || !x.id || !x.v) continue;
+      x.notes = x.notes || {};
+      const i = db.eleves.findIndex(y=>y.id===x.id);
+      if (i>=0){ db.eleves[i]=x; replaced++; } else { db.eleves.push(x); added++; }
+    }
+    db.currentId = db.currentId && db.eleves.some(y=>y.id===db.currentId) ? db.currentId : db.eleves[0]?.id;
+    save(); render(); toast(`Import : ${added} élève(s) ajouté(s), ${replaced} mis à jour.`);
+  } catch(err){ toast('Import impossible : '+err.message, true); }
+});
+$('#file-tpl').addEventListener('change', async ev=>{
+  const file=ev.target.files[0]; ev.target.value=''; if (!file) return;
+  try { await setTemplate(new Uint8Array(await file.arrayBuffer())); render(); toast('Formulaire chargé.'); }
+  catch(err){ toast('Ce fichier n’est pas le formulaire attendu : '+err.message, true); }
+});
+
+function openSettings(){
+  const d=settings.defaults||{};
+  const f=(k,l,o={})=>`<div class="fld ${o.cls||''}"><label>${l}</label><input data-def="${k}" value="${esc(d[k]||'')}"></div>`;
+  modal(`<div class="modal"><div class="modal-head"><h2>Paramètres</h2><button class="x" data-close aria-label="Fermer">×</button></div>
+    <div class="modal-body">
+      <h3 class="sub">Aide à la rédaction (API Albert)</h3>
+      <div class="grid g2">
+        <div class="fld span2"><label for="set-relay">Adresse du relais</label><input id="set-relay" value="${esc(settings.relay)}"><p class="hint" style="margin-top:4px">Par défaut <code>/api/albert</code> (fonction Vercel de cette application). La clé Albert reste côté serveur.</p></div>
+        <div class="fld span2"><label for="set-token">Jeton d’accès au relais (facultatif)</label><input id="set-token" type="password" value="${esc(settings.token)}"><p class="hint" style="margin-top:4px">À renseigner si la variable APP_TOKEN est définie sur Vercel.</p></div>
+      </div>
+      <p><button class="btn small" id="set-test">Tester la connexion</button> <span id="set-test-res" class="hint"></span></p>
+      <h3 class="sub">Valeurs du dispositif (reprises pour chaque nouvel élève)</h3>
+      <div class="grid g3">
+        ${f('Coordonnees-enseignant_Nom','Enseignant référent — nom et coordonnées',{cls:'span3'})}
+        ${f('Coordonnees-enseignant_Telephone','Tél. enseignant référent')}
+        ${f('Coordonnees-enseignant_Courriel','Courriel enseignant référent',{cls:'span2'})}
+        ${f('Etablissement-scolaire','Établissement',{cls:'span3'})}
+        ${f('Etablissement-scolaire_Numero-et-rue','N° et rue',{cls:'span3'})}
+        ${f('Points-saillants-scolarisation_Code-postal','Code postal')}
+        ${f('Etablissement-scolaire_Ville','Ville',{cls:'span2'})}
+      </div>
+      <div class="fld" style="margin-top:14px"><label for="set-parts">Participants habituels — un par ligne : <em>Nom Prénom ; Fonction</em></label>
+        <textarea id="set-parts" rows="4" placeholder="M. Medkour ; Coordonnateur ULIS">${esc(settings.participants)}</textarea></div>
+      <p class="hint" style="margin-top:14px">Les données des élèves sont enregistrées uniquement dans ce navigateur. Avant de changer d’appareil ou de vider le navigateur, faites une sauvegarde .json.</p>
+    </div>
+    <div class="modal-foot"><button class="btn" data-close>Annuler</button><button class="btn primary" id="set-ok">Enregistrer</button></div></div>`);
+  $('#set-test').onclick = async ()=>{
+    const out=$('#set-test-res'); out.textContent='Test en cours…';
+    const keep={relay:settings.relay, token:settings.token}; settings.relay=$('#set-relay').value.trim(); settings.token=$('#set-token').value;
+    try { const t = await callAlbert([{role:'user',content:'Réponds seulement : OK'}], 10); out.textContent='Connexion établie (réponse : '+t.slice(0,40)+')'; }
+    catch(err){ out.textContent='Échec : '+err.message; }
+    finally { Object.assign(settings, keep); }
+  };
+  $('#set-ok').onclick = ()=>{
+    settings.relay=$('#set-relay').value.trim()||'/api/albert'; settings.token=$('#set-token').value;
+    settings.defaults={}; document.querySelectorAll('[data-def]').forEach(i=>{ if (i.value.trim()) settings.defaults[i.dataset.def]=i.value.trim(); });
+    settings.participants=$('#set-parts').value; saveSettings(); closeModal(); toast('Paramètres enregistrés.');
+  };
+}
+
+/* ---------- Modale générique ---------- */
+function modal(html){
+  $('#modal-root').innerHTML = `<div class="overlay">${html}</div>`;
+  const ov = $('#modal-root .overlay');
+  ov.addEventListener('click', ev=>{ if (ev.target===ov || ev.target.closest('[data-close]')) closeModal(); });
+  setTimeout(()=>ov.querySelector('textarea, input, .btn.primary')?.focus(), 30);
+}
+function closeModal(){ $('#modal-root').innerHTML=''; }
+document.addEventListener('keydown', ev=>{ if (ev.key==='Escape' && $('#modal-root').innerHTML) closeModal(); });
+
+/* =====================================================================
+   8. Aide à la rédaction — API Albert (via relais, données pseudonymisées)
+   ===================================================================== */
+const SYSTEM = `Tu aides un enseignant coordonnateur d’ULIS-école (premier degré) à rédiger le GEVA-Sco « réexamen », support de recueil d’informations transmis à la MDPH.
+Règles impératives :
+- Français professionnel, factuel, bienveillant, phrases courtes, au présent.
+- Décrire des observations concrètes et situées : ce que l’élève fait, dans quelles situations, avec quelle aide ou quel aménagement, avec quels effets.
+- Aucun diagnostic, aucune hypothèse médicale ou psychologique, aucun jugement de valeur sur l’élève ou la famille.
+- N’invente jamais d’information : n’utilise que ce qui figure dans les notes ou le texte fourni. Si une information manque, ne la complète pas.
+- Ne formule pas de demande de décision (orientation, notification, aide humaine, matériel) : le GEVA-Sco décrit, il ne préjuge pas des décisions de la CDAPH. Tu peux décrire des besoins observés.
+- Désigne l’élève par « [ÉLÈVE] » ou « l’élève ». Conserve tels quels les repères entre crochets comme [PARENT1].
+- Texte brut : pas de titre, pas de markdown, pas de gras. Listes à tirets seulement si les notes en contiennent déjà.
+- Respecte la longueur maximale indiquée : le cadre du formulaire papier est de taille fixe.`;
+
+function pseudoMap(e){
+  const map = [];
+  const add = (str, token) => String(str||'').split(/[\s\-’']+/).filter(w=>w.length>=2).forEach(w=>map.push([w, token]));
+  add(e.v._prenom, '[ÉLÈVE]'); add(e.v._nom, '[ÉLÈVE]');
+  [1,2,3].forEach(n=>add((e.v[`Personne${n}_Nom-ligne1`]||'')+' '+(e.v[`Personne${n}_Nom-ligne2`]||''), `[PARENT${n}]`));
+  return map.sort((a,b)=>b[0].length-a[0].length);
+}
+function pseudo(text, e){
+  let t = String(text||'');
+  for (const [w,tok] of pseudoMap(e)){
+    const re = new RegExp(`(?<![\\p{L}])${w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}(?![\\p{L}])`, 'giu');
+    t = t.replace(re, tok);
+  }
+  t = t.replace(/(\[(ÉLÈVE|PARENT\d)\])(\s+\1)+/g, '$1');
+  t = t.replace(/[\w.+-]+@[\w-]+\.[\w.]+/g, '[courriel]').replace(/(?:\+33\s?|0)[1-9](?:[\s.-]?\d{2}){4}/g, '[téléphone]');
+  return t;
+}
+function unpseudo(text, e){
+  const prenom = (e.v._prenom||'').trim();
+  let t = String(text||'');
+  t = t.replace(/\[\s*[ÉE]L[ÈE]VE\s*\]/gi, prenom || 'l’élève');
+  [1,2,3].forEach(n=>{ const name=(e.v[`Personne${n}_Nom-ligne1`]||'').trim(); t=t.replace(new RegExp(`\\[\\s*PARENT\\s*${n}\\s*\\]`,'gi'), name || (n===3?'le responsable légal':'le parent')); });
+  return t.replace(/\*\*(.+?)\*\*/g,'$1').replace(/^#+\s*/gm,'').trim();
+}
+
+async function callAlbert(messages, maxTokens=1200){
+  const headers={'Content-Type':'application/json'}; if (settings.token) headers['X-App-Token']=settings.token;
+  const ctrl = new AbortController(); const timer=setTimeout(()=>ctrl.abort(), 60000);
+  let res;
+  try { res = await fetch(settings.relay||'/api/albert', {method:'POST', headers, body:JSON.stringify({messages, temperature:0.3, max_tokens:maxTokens}), signal:ctrl.signal}); }
+  catch(err){ throw new Error(err.name==='AbortError' ? 'délai dépassé' : 'relais injoignable (application ouverte hors Vercel ?)'); }
+  finally { clearTimeout(timer); }
+  let data={}; try { data = await res.json(); } catch(e){}
+  if (!res.ok) throw new Error(data.error || `erreur ${res.status}`);
+  if (!data.text) throw new Error('réponse vide');
+  return data.text;
+}
+
+function areaContext(f){
+  const a = AREAS[f] || {};
+  const sec = SECTIONS.find(s=>s.id===a.sec);
+  const e = cur();
+  const lines = [`Rubrique : ${sec?sec.title+' › ':''}${a.label||f}`];
+  if (a.group) lines.push(`Groupe d’activités : ${a.group}`);
+  if (a.hint) lines.push(`Attendu de la rubrique : ${a.hint}`);
+  if (e.v['Classe-frequentee']) lines.push(`Classe fréquentée : ${e.v['Classe-frequentee']}`);
+  const cap = capacity(f); if (cap) lines.push(`Longueur maximale : environ ${cap} caractères, espaces compris.`);
+  return lines.join('\n');
+}
+
+async function aiAction(act, key, btn){
+  const e = cur(); if (!e) return;
+  if (act==='cadres') return aiCadres(key, btn);
+  const f = key, text = String(e.v[f]||''), notes = String(e.notes[f]||'');
+  if (act==='rediger' && !notes.trim() && !text.trim()){
+    openNotes.add(f); const box=document.querySelector(`[data-notesbox="${CSS.escape(f)}"]`); if (box){ box.hidden=false; box.querySelector('textarea').focus(); }
+    document.querySelector(`.tool[data-act="notes"][data-f="${CSS.escape(f)}"]`)?.classList.add('on');
+    return toast('Saisissez d’abord quelques notes rapides : Albert les mettra en forme.');
+  }
+  if ((act==='ameliorer'||act==='condenser') && !text.trim()) return toast('Le cadre est vide : utilisez plutôt « Rédiger depuis mes notes ».');
+  const ctx = areaContext(f);
+  let prompt;
+  if (act==='rediger') prompt = `${ctx}\n\nNotes de l’enseignant :\n${pseudo(notes,e)||'(aucune)'}${text.trim()?`\n\nTexte déjà présent dans le cadre, à conserver et intégrer :\n${pseudo(text,e)}`:''}\n\nRédige le texte de cette rubrique à partir de ces éléments uniquement.`;
+  if (act==='ameliorer') prompt = `${ctx}\n\nTexte à améliorer :\n${pseudo(text,e)}\n\nAméliore la rédaction (clarté, précision des observations, ton professionnel, orthographe) sans ajouter d’information nouvelle. Donne uniquement le texte révisé.`;
+  if (act==='condenser') prompt = `${ctx}\n\nTexte à condenser (${text.length} caractères) :\n${pseudo(text,e)}\n\nCondense ce texte pour qu’il tienne en ${capacity(f)||400} caractères au plus, en gardant les observations essentielles, les aides efficaces et leurs effets. Donne uniquement le texte condensé.`;
+  if (act==='questions') prompt = `${ctx}\n\nCe qui est déjà écrit :\n${pseudo(text,e)||'(rien)'}\nNotes :\n${pseudo(notes,e)||'(aucune)'}\n\nPropose 4 à 6 questions courtes et concrètes que l’enseignant peut se poser pour compléter cette rubrique (ce qui manque encore). Une question par ligne, sans numérotation ni introduction.`;
+
+  const titles = {rediger:'Proposition de rédaction', ameliorer:'Proposition d’amélioration', condenser:'Proposition condensée', questions:'Questions pour compléter la rubrique'};
+  modal(`<div class="modal"><div class="modal-head"><h2>${titles[act]}</h2><button class="x" data-close aria-label="Fermer">×</button></div>
+    <div class="modal-body"><p class="prop-note">${esc(AREAS[f]?.label||f)}</p><div class="loading"><span class="spin"></span>Albert rédige une proposition…</div></div></div>`);
+  btn && (btn.disabled=true);
+  try {
+    const out = unpseudo(await callAlbert([{role:'system',content:SYSTEM},{role:'user',content:prompt}]), e);
+    if (!$('#modal-root').innerHTML) return; // fermée entre-temps
+    if (act==='questions') return showQuestions(f, out);
+    showProposal(f, out, act);
+  } catch(err){
+    if ($('#modal-root .modal-body')) $('#modal-root .modal-body').innerHTML = `<p style="color:var(--warn)">L’aide Albert n’a pas répondu : ${esc(err.message)}.</p><p class="hint">Vérifiez l’adresse du relais dans Paramètres et la clé ALBERT_API_KEY sur Vercel.</p>`;
+  } finally { btn && (btn.disabled=false); }
+}
+
+function showProposal(f, text, act){
+  const e = cur(); const had = String(e.v[f]||'').trim();
+  $('#modal-root .overlay').innerHTML = `<div class="modal"><div class="modal-head"><h2>Proposition d’Albert — à relire</h2><button class="x" data-close aria-label="Fermer">×</button></div>
+    <div class="modal-body">
+      <p class="prop-note">${esc(AREAS[f]?.label||f)} · Vous pouvez modifier la proposition avant de l’insérer. Rien n’est inséré sans votre validation.</p>
+      <textarea id="prop" rows="9">${esc(text)}</textarea>
+      <div class="meter" id="prop-meter"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" data-close>Ignorer</button>
+      ${had && act==='rediger' ? '<button class="btn" id="prop-add">Ajouter à la suite</button>' : ''}
+      <button class="btn primary" id="prop-ok">${had?'Remplacer le texte':'Insérer dans le cadre'}</button>
+    </div></div>`;
+  const ta=$('#prop'); const pm=()=>propMeter(f, ta.value, $('#prop-meter')); ta.addEventListener('input', pm); pm(); autoGrow(ta);
+  $('#prop-ok').onclick=()=>insert(f, ta.value, false);
+  $('#prop-add') && ($('#prop-add').onclick=()=>insert(f, ta.value, true));
+  ta.focus();
+}
+function propMeter(f, text, el){
+  const r = fitOf(f, text); if (!r || !el){ if (el) el.innerHTML=''; return; }
+  const pct=Math.min(100,Math.round(r.fill*100));
+  el.className='meter '+(!r.fits?'over':(r.size<7.5?'amber':''));
+  el.innerHTML=`<span class="bar"><i style="width:${r.fits?pct:100}%"></i></span><span>${!r.fits?'Dépasse encore le cadre':(r.size<GevaExport.PREFERRED?`Tiendra en ${String(r.size).replace('.',',')} pt`:`${pct} % du cadre`)} · ${text.length} caractères</span>`;
+}
+function insert(f, text, append){
+  const e=cur(); const old=String(e.v[f]||'').trim();
+  e.v[f] = append && old ? old+'\n'+text.trim() : text.trim(); touch(); closeModal();
+  const el=fieldEl(f); if (el){ el.value=e.v[f]; autoGrow(el); }
+  updateMeter(f); Object.keys(GROUPS).forEach(updateGroupWarn); renderNav();
+  toast('Texte inséré. Relisez-le dans son cadre.');
+}
+function showQuestions(f, out){
+  const qs = out.split('\n').map(s=>s.replace(/^[\s\-–•\d.)]+/,'').trim()).filter(Boolean).slice(0,8);
+  $('#modal-root .overlay').innerHTML = `<div class="modal"><div class="modal-head"><h2>Questions pour compléter la rubrique</h2><button class="x" data-close aria-label="Fermer">×</button></div>
+    <div class="modal-body"><p class="prop-note">${esc(AREAS[f]?.label||f)}</p><ol class="qlist">${qs.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>
+    <p class="hint" style="margin-top:14px">Répondez en quelques mots dans vos notes rapides, puis utilisez « Rédiger depuis mes notes ».</p></div>
+    <div class="modal-foot"><button class="btn" data-close>Fermer</button><button class="btn primary" id="q-add">Ajouter les questions à mes notes</button></div></div>`;
+  $('#q-add').onclick=()=>{
+    const e=cur(); const add=qs.map(x=>`${x}\n→ `).join('\n'); e.notes[f]=(e.notes[f]?e.notes[f].trim()+'\n\n':'')+add; touch(); closeModal();
+    openNotes.add(f); render();
+    const n=document.querySelector(`[data-notes="${CSS.escape(f)}"]`); if (n){ n.focus(); n.scrollIntoView({block:'center'}); }
+  };
+}
+
+async function aiCadres(id, btn){
+  const e=cur(); const g=GROUPS[id];
+  const cot = g.rows.filter(([f])=>e.v[f]).map(([f,l])=>`- ${l} : ${e.v[f]==='SO'?'sans objet':e.v[f]}`);
+  if (!cot.length) return toast('Cotez d’abord au moins une activité du groupe (A, B, C ou D).');
+  const notes = [e.notes[g.c1], e.notes[g.c2]].filter(x=>x&&x.trim()).join('\n');
+  const existing = [e.v[g.c1]?`Cadre 1 actuel : ${e.v[g.c1]}`:'', e.v[g.c2]?`Cadre 2 actuel : ${e.v[g.c2]}`:''].filter(Boolean).join('\n');
+  const prompt = `Grille d’observation des activités du GEVA-Sco — groupe « ${g.title} ».
+Cotation au regard de l’autonomie d’un élève du même âge : A = réalisée sans difficulté et seul ; B = difficultés ponctuelles et/ou aide ponctuelle ; C = difficultés régulières et/ou aide régulière ; D = activité non réalisée.
+Cotations :
+${cot.join('\n')}
+${e.v['Classe-frequentee']?`Classe fréquentée : ${e.v['Classe-frequentee']}\n`:''}${g.bati&&e.v['Accessibilite-du-bati']?`Accessibilité du bâti : ${e.v['Accessibilite-du-bati']}\n`:''}
+Notes de l’enseignant :
+${pseudo(notes,e)||'(aucune)'}
+${existing?pseudo(existing,e)+'\n':''}
+Rédige deux textes :
+1. « obstacles » (Cadre 1 — obstacles à la réalisation de l’activité) : centré sur les activités cotées C et D, ce qui freine concrètement. Au plus ${capacity(g.c1)||400} caractères.
+2. « appuis » (Cadre 2 — points d’appui et commentaires) : aides efficaces, conditions de réussite, domaines où l’élève se réalise. Au plus ${capacity(g.c2)||400} caractères.
+N’utilise que les informations fournies ; si les notes ne disent rien d’un point, reste général et prudent plutôt que d’inventer.
+Réponds uniquement avec un objet JSON : {"obstacles":"…","appuis":"…"}`;
+  modal(`<div class="modal"><div class="modal-head"><h2>Cadres 1 et 2 — ${esc(g.title)}</h2><button class="x" data-close aria-label="Fermer">×</button></div>
+    <div class="modal-body"><div class="loading"><span class="spin"></span>Albert rédige une proposition à partir des cotations…</div></div></div>`);
+  btn && (btn.disabled=true);
+  try {
+    const raw = await callAlbert([{role:'system',content:SYSTEM},{role:'user',content:prompt}], 1400);
+    if (!$('#modal-root').innerHTML) return;
+    const m = raw.match(/\{[\s\S]*\}/); let obj;
+    try { obj = JSON.parse(m ? m[0] : raw); } catch(err){ throw new Error('réponse non structurée, réessayez'); }
+    const o = unpseudo(obj.obstacles||'', e), a = unpseudo(obj.appuis||'', e);
+    $('#modal-root .overlay').innerHTML = `<div class="modal"><div class="modal-head"><h2>Proposition d’Albert — ${esc(g.title)}</h2><button class="x" data-close aria-label="Fermer">×</button></div>
+      <div class="modal-body"><p class="prop-note">Relisez et ajustez avant d’insérer. Les cadres déjà remplis seront remplacés.</p>
+        <div class="prop-label">Cadre 1 — Obstacles à la réalisation de l’activité</div><textarea id="p1" rows="6">${esc(o)}</textarea><div class="meter" id="m1"></div>
+        <div class="prop-label">Cadre 2 — Points d’appui et commentaires</div><textarea id="p2" rows="6">${esc(a)}</textarea><div class="meter" id="m2"></div></div>
+      <div class="modal-foot"><button class="btn" data-close>Ignorer</button><button class="btn" id="pc1">Insérer le cadre 1 seul</button><button class="btn primary" id="pc">Insérer les deux cadres</button></div></div>`;
+    const t1=$('#p1'), t2=$('#p2'); const up=()=>{ propMeter(g.c1,t1.value,$('#m1')); propMeter(g.c2,t2.value,$('#m2')); };
+    t1.oninput=up; t2.oninput=up; up();
+    $('#pc1').onclick=()=>insert(g.c1, t1.value, false);
+    $('#pc').onclick=()=>{ e.v[g.c2]=t2.value.trim(); insert(g.c1, t1.value, false); const el=fieldEl(g.c2); if (el){ el.value=e.v[g.c2]; autoGrow(el); } updateMeter(g.c2); };
+  } catch(err){
+    if ($('#modal-root .modal-body')) $('#modal-root .modal-body').innerHTML = `<p style="color:var(--warn)">L’aide Albert n’a pas abouti : ${esc(err.message)}.</p>`;
+  } finally { btn && (btn.disabled=false); }
+}
+
+/* =====================================================================
+   9. Démarrage
+   ===================================================================== */
+async function setTemplate(bytes){
+  const info = await GevaExport.inspect(bytes);
+  if (!info.fields['Nom-et-prenom-de-l-eleve'] || !info.fields['Lire']) throw new Error('champs GEVA-Sco absents');
+  tpl = {bytes, font:info.font, fields:info.fields};
+  for (const k in capCache) delete capCache[k];
+}
+(async function init(){
+  if (db.currentId && !cur()) db.currentId = db.eleves[0]?.id || null;
+  if (!SECTIONS.some(s=>s.id===section)) section='ident';
+  render();
+  try {
+    const r = await fetch('geva-sco-reexamen.pdf'); if (!r.ok) throw new Error(r.status);
+    await setTemplate(new Uint8Array(await r.arrayBuffer()));
+  } catch(err){ console.warn('Gabarit non chargé', err); }
+  tplLoading = false;
+  render();
+})();
+</script>
+</body>
+</html>
