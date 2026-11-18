@@ -13,18 +13,19 @@
 const BASE = (process.env.ALBERT_BASE_URL || 'https://albert.api.etalab.gouv.fr/v1').replace(/\/$/, '');
 let fallbackModel = null;
 
-async function complete(model, body) {
+async function complete(model, body, signal) {
   return fetch(`${BASE}/chat/completions`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${process.env.ALBERT_API_KEY}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({ ...body, model, stream: false }),
+    signal,
   });
 }
 
 // Si le modèle configuré n'existe pas (catalogue Albert mis à jour), on prend le premier modèle de chat disponible.
-async function firstChatModel() {
+async function firstChatModel(signal) {
   if (fallbackModel) return fallbackModel;
-  const r = await fetch(`${BASE}/models`, { headers: { Authorization: `Bearer ${process.env.ALBERT_API_KEY}` } });
+  const r = await fetch(`${BASE}/models`, { headers: { Authorization: `Bearer ${process.env.ALBERT_API_KEY}` }, signal });
   if (!r.ok) return null;
   const data = await r.json();
   const m = (data.data || []).find(x => x.type === 'text-generation');
@@ -44,34 +45,47 @@ module.exports = async (req, res) => {
   const size = valid ? messages.reduce((n, m) => n + m.content.length, 0) : 0;
   if (!valid || size > 30000) return res.status(400).json({ error: 'requête invalide' });
 
+  // Le budget inclut le raisonnement du modèle, en plus du texte demandé.
+  const requestedTokens = Number(max_tokens);
+  const outputTokens = Number.isFinite(requestedTokens) ? Math.min(2000, Math.max(10, Math.ceil(requestedTokens))) : 1200;
   const body = {
     messages,
     temperature: Math.min(1, Math.max(0, Number(temperature) || 0.3)),
-    max_tokens: Math.min(2000, Math.max(10, Number(max_tokens) || 1200)),
+    max_tokens: outputTokens + 4096,
   };
 
   try {
+    // Une échéance commune couvre le catalogue, la génération et sa relance.
+    const signal = AbortSignal.timeout(90000);
     let model = process.env.ALBERT_MODEL || 'albert-large';
-    let r = await complete(model, body);
+    let r = await complete(model, body, signal);
     if (r.status === 404 || r.status === 422) {
-      const alt = await firstChatModel();
-      if (alt && alt !== model) { model = alt; r = await complete(model, body); }
+      const alt = await firstChatModel(signal);
+      if (alt && alt !== model) { model = alt; r = await complete(model, body, signal); }
     }
-    const data = await r.json().catch(() => ({}));
+    let data = await r.json().catch(() => ({}));
+    // Recommencer une seule fois, sans renvoyer de texte tronqué ni le raisonnement.
+    if (r.ok && data.choices?.[0]?.finish_reason === 'length') {
+      r = await complete(model, { ...body, max_tokens: Math.min(16384, body.max_tokens * 2) }, signal);
+      data = await r.json().catch(() => ({}));
+    }
     if (!r.ok) {
       const detail = data.detail || data.error?.message || data.error || '';
       return res.status(502).json({ error: `Albert a répondu ${r.status}${detail ? ' : ' + String(typeof detail === 'string' ? detail : JSON.stringify(detail)).slice(0, 200) : ''}` });
     }
     const choice = data.choices?.[0];
+    if (choice?.finish_reason === 'length') {
+      return res.status(502).json({ error: 'La réponse d’Albert dépasse encore la limite après une seconde tentative. Essayez une rubrique à la fois ou des notes plus courtes.' });
+    }
     const text = choice?.message?.content;
     if (typeof text !== 'string' || !text.trim()) {
-      const error = choice?.finish_reason === 'length'
-        ? 'Albert a atteint la limite de génération avant de produire une réponse. Réessayez.'
-        : 'Albert n’a renvoyé aucun texte. Réessayez.';
-      return res.status(502).json({ error });
+      return res.status(502).json({ error: 'Albert n’a renvoyé aucun texte. Réessayez.' });
     }
     return res.status(200).json({ text, model });
   } catch (err) {
+    if (err.name === 'TimeoutError' || err.name === 'AbortError') {
+      return res.status(504).json({ error: 'Albert met trop de temps à répondre. Réessayez dans un instant ; vos notes sont conservées.' });
+    }
     return res.status(502).json({ error: 'Albert injoignable : ' + err.message });
   }
 };

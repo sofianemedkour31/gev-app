@@ -963,12 +963,15 @@ function unpseudo(text, e){
 
 async function callAlbert(messages, maxTokens=1200){
   const headers={'Content-Type':'application/json'}; if (settings.token) headers['X-App-Token']=settings.token;
-  const ctrl = new AbortController(); const timer=setTimeout(()=>ctrl.abort(), 60000);
+  const ctrl = new AbortController(); const timer=setTimeout(()=>ctrl.abort(), 120000);
   let res;
-  try { res = await fetch(settings.relay||'/api/albert', {method:'POST', headers, body:JSON.stringify({messages, temperature:0.3, max_tokens:maxTokens}), signal:ctrl.signal}); }
+  let data={};
+  try {
+    res = await fetch(settings.relay||'/api/albert', {method:'POST', headers, body:JSON.stringify({messages, temperature:0.3, max_tokens:maxTokens}), signal:ctrl.signal});
+    data = await res.json().catch(err => { if (err.name === 'AbortError') throw err; return {}; });
+  }
   catch(err){ throw new Error(err.name==='AbortError' ? 'délai dépassé' : 'relais injoignable (application ouverte hors Vercel ?)'); }
   finally { clearTimeout(timer); }
-  let data={}; try { data = await res.json(); } catch(e){}
   if (!res.ok) throw new Error(data.error || `erreur ${res.status}`);
   if (typeof data.text !== 'string' || !data.text.trim()) throw new Error('Albert n’a renvoyé aucun texte. Réessayez.');
   return data.text;
@@ -1013,7 +1016,7 @@ async function aiAction(act, key, btn){
     if (act==='questions') return showQuestions(f, out);
     showProposal(f, out, act);
   } catch(err){
-    if ($('#modal-root .modal-body')) $('#modal-root .modal-body').innerHTML = `<p style="color:var(--warn)">L’aide Albert n’a pas répondu : ${esc(err.message)}.</p><p class="hint">Vérifiez l’adresse du relais dans Paramètres et la clé ALBERT_API_KEY sur Vercel.</p>`;
+    if ($('#modal-root .modal-body')) $('#modal-root .modal-body').innerHTML = `<p style="color:var(--warn)">L’aide Albert n’a pas répondu : ${esc(err.message)}</p><p class="hint">Vos notes et le texte existant sont conservés.</p>`;
   } finally { btn && (btn.disabled=false); }
 }
 
@@ -1099,7 +1102,7 @@ Réponds uniquement avec un objet JSON : {"obstacles":"…","appuis":"…"}`;
     $('#pc1').onclick=()=>insert(g.c1, t1.value, false);
     $('#pc').onclick=()=>{ e.v[g.c2]=t2.value.trim(); insert(g.c1, t1.value, false); const el=fieldEl(g.c2); if (el){ el.value=e.v[g.c2]; autoGrow(el); } updateMeter(g.c2); };
   } catch(err){
-    if ($('#modal-root .modal-body')) $('#modal-root .modal-body').innerHTML = `<p style="color:var(--warn)">L’aide Albert n’a pas abouti : ${esc(err.message)}.</p>`;
+    if ($('#modal-root .modal-body')) $('#modal-root .modal-body').innerHTML = `<p style="color:var(--warn)">L’aide Albert n’a pas abouti : ${esc(err.message)}</p>`;
   } finally { btn && (btn.disabled=false); }
 }
 
