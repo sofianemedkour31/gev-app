@@ -86,6 +86,14 @@ test('layout maps the administrative and commentary fields to the right pages', 
   assert.equal(layout.fields.find(f => f.name === 'Communication_Cadre1').page, 3);
   assert.ok(layout.fields.length > 120);
 });
+test('radio export labels are read even when PDF appearance names are numeric', async () => {
+  const P = require('../vendor/pdf-lib.min.js');
+  const pdf = await P.PDFDocument.create(); const page = pdf.addPage();
+  const radio = pdf.getForm().createRadioGroup('Lire');
+  radio.addOptionToPage('D', page, { x:20,y:20,width:12,height:12 }); radio.select('D');
+  const values = await importer.readFields(await pdf.save(), new Set(['Lire']));
+  assert.equal(values.Lire, 'D');
+});
 test('geometric extraction excludes text from adjacent fields', () => {
   const text = importer.textInBox([{ text: 'DUPONT', x: 20, y: 20 }, { text: 'Léo', x: 60, y: 20 }, { text: '.........', x: 15, y: 21 }, { text: 'AUTRE', x: 200, y: 20 }], { x: 10, y: 10, width: 100, height: 20 });
   assert.equal(text, 'DUPONT Léo');

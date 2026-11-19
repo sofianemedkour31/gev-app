@@ -61,10 +61,12 @@
         if (text?.trim()) values[name] = text;
       } else {
         const state = field.acroField.dict.lookup(PDFName.of('V'));
-        const selected = state?.decodeText?.();
+        const rawSelected = state?.decodeText?.();
+        const exported = typeof field.getSelected === 'function' ? field.getSelected() : null;
+        const selected = typeof exported === 'string' ? exported : rawSelected;
         if (!selected || selected === 'Off') continue;
         if (name === 'Scolarite') {
-          const index = field.acroField.getWidgets().findIndex(w => w.getOnValue()?.decodeText() === selected);
+          const index = field.acroField.getWidgets().findIndex(w => w.getOnValue()?.decodeText() === rawSelected);
           if (index >= 0) values[name] = `#${index}`;
         } else if (COTES.includes(selected) || /^Personne[123]$/.test(name) || name === 'Accessibilite-du-bati') values[name] = selected;
         else values[name] = true;
