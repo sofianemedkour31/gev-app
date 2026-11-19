@@ -5,10 +5,10 @@
  * sa mise en page, on remplit directement ces champs : le rendu est donc identique
  * au document papier.
  *
- * Dépend de pdf-lib (variable globale PDFLib dans le navigateur, require('pdf-lib') en Node).
+ * Dépend de pdf-lib (variable globale PDFLib dans le navigateur, copie embarquée en Node).
  */
 (function (root, factory) {
-  if (typeof module === 'object' && module.exports) module.exports = factory(require('pdf-lib'));
+  if (typeof module === 'object' && module.exports) module.exports = factory(require('./vendor/pdf-lib.min.js'));
   else root.GevaExport = factory(root.PDFLib);
 })(typeof self !== 'undefined' ? self : this, function (PDFLib) {
   'use strict';
