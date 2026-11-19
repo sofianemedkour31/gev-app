@@ -54,6 +54,14 @@ test('unrelated, duplicate and incomplete AI question selections are rejected', 
   assert.equal(guidance.validateQuestions({ questions: [selected[0], selected[0]] }, selected), null);
   assert.equal(guidance.validateQuestions({ questions: selected }, selected).length, 2);
 });
+test('evolution questions compare ratings without assuming success or inventing aids', () => {
+  const questions = guidance.evolutionQuestions(groups, { Lire:'D', Ecrire:'B' }, { Lire:'D', Ecrire:'C', [groups.g5.c2]:'Ancien appui visuel.' });
+  assert.equal(questions.length, 3);
+  assert.match(questions[0].question, /dans les deux documents/);
+  assert.match(questions[1].question, /ancienne cotation était C et l’actuelle est B/);
+  assert.match(questions[2].question, /décrits dans les anciens commentaires/);
+  assert.doesNotMatch(questions.map(q=>q.question).join('\n'), /réussit|dictée|modèle/);
+});
 test('identity and historical dates normalize without inventing a given name', () => {
   const v = importer.normalize({ 'Nom-et-prenom-de-l-eleve': 'DUPONT MARTIN Léo Paul', 'Date-naissance_Jour': '04', 'Date-naissance_Mois': '06', 'Date-naissance_Annee': '2017', 'Annee-scolaire-debut': '25', 'Annee-scolaire-fin': '26' });
   assert.equal(v._nom, 'DUPONT MARTIN'); assert.equal(v._prenom, 'Léo Paul'); assert.equal(v._naissance, '2017-06-04'); assert.equal(v._annee, '2025-2026');

@@ -1026,6 +1026,11 @@ function areaContext(f){
 async function aiAction(act, key, btn){
   const e = cur(); if (!e) return;
   if (act==='cadres') return aiCadres(key, btn);
+  if (act==='evolutionQuestions') {
+    const questions = GevaGuidance.evolutionQuestions(GROUPS, e.v, e.baseline?.values || {}, e.guidanceAnswers?.[key] || {});
+    if (!questions.length) return toast('Aucun nouveau point de comparaison disponible. Consultez les anciens commentaires et vos réponses déjà enregistrées dans les notes.');
+    return showQuestions(key, questions, 'Ces questions s’appuient sur les anciennes observations et les cotations, sans présumer d’une progression ni de la réussite d’une activité.');
+  }
   if (act==='questions' && GevaGuidance.groupFor(GROUPS, key)) return guidedActivityQuestions(key, btn);
   const f = key, text = String(e.v[f]||''), notes = String(e.notes[f]||'');
   if (act==='rediger' && !notes.trim() && !text.trim()){
@@ -1089,10 +1094,10 @@ function insert(f, text, append){
 function showQuestions(f, out, message=''){
   const student = cur(); if (!student) return;
   const qs = Array.isArray(out) ? out : out.split('\n').map(s=>s.replace(/^[\s\-–•\d.)]+/,'').trim()).filter(Boolean).slice(0,6).map((question,i)=>({id:`${f}:libre:${i}`,question}));
-  $('#modal-root .overlay').innerHTML = `<div class="modal"><div class="modal-head"><h2>Questions pour compléter la rubrique</h2><button class="x" data-close aria-label="Fermer">×</button></div>
-    <div class="modal-body"><p class="prop-note">${esc(AREAS[f]?.group?AREAS[f].group+' — ':'')}${esc(AREAS[f]?.label||f)}</p>${message?`<p class="hint">${esc(message)}</p>`:''}<ol class="qlist">${qs.map((q,i)=>`<li>${q.label?`<p class="question-source">${esc(q.label)} · ${q.historicalOnly?'ancienne cotation':'cotation actuelle'} ${esc(q.cote)}</p>`:''}<label for="question-answer-${i}">${esc(q.question)}</label><textarea id="question-answer-${i}" data-question-answer="${i}" rows="2" placeholder="Votre observation concrète (facultatif)"></textarea></li>`).join('')}</ol>
+  modal(`<div class="modal"><div class="modal-head"><h2>Questions pour compléter la rubrique</h2><button class="x" data-close aria-label="Fermer">×</button></div>
+    <div class="modal-body"><p class="prop-note">${esc(AREAS[f]?.group?AREAS[f].group+' — ':'')}${esc(AREAS[f]?.label||f)}</p>${message?`<p class="hint">${esc(message)}</p>`:''}<ol class="qlist">${qs.map((q,i)=>`<li>${q.label?`<p class="question-source">${esc(q.label)}${q.cote?' · '+(q.historicalOnly?'ancienne cotation':'cotation actuelle')+' '+esc(q.cote):''}</p>`:''}<label for="question-answer-${i}">${esc(q.question)}</label><textarea id="question-answer-${i}" data-question-answer="${i}" rows="2" placeholder="Votre observation concrète (facultatif)"></textarea></li>`).join('')}</ol>
     <p class="hint" style="margin-top:14px">Répondez uniquement aux questions utiles. Seules vos réponses renseignées seront ajoutées aux notes de ce cadre ; aucune observation n’est inventée.</p><p id="question-error" role="status"></p></div>
-    <div class="modal-foot"><button class="btn" data-close>Fermer</button><button class="btn" id="q-add">Conserver mes réponses dans les notes</button><button class="btn primary" id="q-write">Rédiger à partir de mes réponses</button></div></div>`;
+    <div class="modal-foot"><button class="btn" data-close>Fermer</button><button class="btn" id="q-add">Conserver mes réponses dans les notes</button><button class="btn primary" id="q-write">Rédiger à partir de mes réponses</button></div></div>`);
   const keepAnswers = write=>{
     if (cur()?.id !== student.id) return closeModal();
     const filled = qs.map((q,i)=>({...q, answer:document.querySelector(`#question-answer-${i}`).value.trim()})).filter(q=>q.answer);

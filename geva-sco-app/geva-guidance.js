@@ -82,5 +82,31 @@
     }
     return result.length === selected.length ? result : null;
   }
-  return { BANK, RATINGS, groupFor, context, candidates, validateQuestions };
+  function evolutionQuestions(groups, values, previous, answered = {}) {
+    const questions = [];
+    const priority = ['D','C','B','A'];
+    for (const group of Object.values(groups)) for (const [activity, label] of group.rows) {
+      const before = previous[activity], now = values[activity];
+      if (!RATINGS[before] || before === 'SO' || now === 'SO') continue;
+      const id = `evolution:${activity}:${before}:${RATINGS[now] ? now : 'non-cote'}`;
+      if (answered[id]?.answer?.trim()) continue;
+      const question = !RATINGS[now]
+        ? `Au précédent GEVA-Sco, « ${label.toLowerCase()} » était coté ${before}. Qu’observes-tu aujourd’hui dans cette activité : changements, stabilité ou nouvelles difficultés, et dans quelles situations ?`
+        : before === now
+          ? `« ${label} » est coté ${now} dans les deux documents. Les situations observées, les conditions de réalisation et l’autonomie sont-elles comparables aujourd’hui ?`
+          : `Pour « ${label.toLowerCase()} », l’ancienne cotation était ${before} et l’actuelle est ${now}. Quels constats actuels expliquent cette différence, et les conditions de réalisation sont-elles comparables ?`;
+      questions.push({ id, activity, label, cote: RATINGS[now] ? now : before, historicalOnly: !RATINGS[now], question, rank: priority.indexOf(RATINGS[now] ? now : before) });
+    }
+    questions.sort((a,b) => a.rank - b.rank);
+    const selected = questions.slice(0,4);
+    for (const [groupId, group] of Object.entries(groups)) {
+      if (!previous[group.c1] && !previous[group.c2]) continue;
+      const id = `evolution:appuis:${groupId}`;
+      if (answered[id]?.answer?.trim()) continue;
+      selected.push({ id, activity: group.c2, label: group.title, question: `Parmi les appuis ou conditions décrits dans les anciens commentaires de ce tableau, lesquels sont encore utilisés aujourd’hui ? Qu’observes-tu avec ces aides, et qu’est-ce qui a été ajusté ?` });
+      if (selected.length >= 6) break;
+    }
+    return selected.slice(0,6);
+  }
+  return { BANK, RATINGS, groupFor, context, candidates, validateQuestions, evolutionQuestions };
 });
